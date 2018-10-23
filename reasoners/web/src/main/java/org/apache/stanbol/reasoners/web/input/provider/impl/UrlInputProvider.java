@@ -26,10 +26,12 @@ import org.apache.stanbol.reasoners.servicesapi.ReasoningServiceInputProvider;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.MissingImportEvent;
+import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
 import org.semanticweb.owlapi.model.MissingImportListener;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderListener;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.slf4j.Logger;
@@ -146,7 +148,7 @@ public class UrlInputProvider implements ReasoningServiceInputProvider {
        
         // FIXME Which is the other way of doing this?
         // Maybe -> OWLOntologyManagerProperties();
-        manager.setSilentMissingImportsHandling(true);
+        manager.setOntologyLoaderConfiguration(new OWLOntologyLoaderConfiguration().setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT));
         // Listening for missing imports
         manager.addMissingImportListener(new MissingImportListener() {
             @Override

@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.stanbol.commons.owl.OWLOntologyManagerFactory;
 import org.apache.stanbol.ontologymanager.servicesapi.io.OntologyInputSource;
@@ -156,7 +157,7 @@ public class TestOWLAPIInputSources {
                 .getOWLNamedIndividual(IRI.create(Constants.PEANUTS_MAIN_BASE + "#Lucy"));
         OWLClass cPerzon = df.getOWLClass(IRI.create("http://xmlns.com/foaf/0.1/Perzon"));
 
-        Set<OWLIndividual> instances = cPerzon.getIndividuals(coreSource.getRootOntology());
+        Set<OWLIndividual> instances = coreSource.getRootOntology().classAssertionAxioms(cPerzon).map(axiom -> axiom.getIndividual()).collect(Collectors.toSet());
         assertTrue(!instances.contains(iLinus) && instances.contains(iLucy));
     }
 

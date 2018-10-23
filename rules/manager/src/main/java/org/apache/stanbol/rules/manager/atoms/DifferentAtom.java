@@ -41,17 +41,17 @@ public class DifferentAtom extends ComparisonAtom {
 
         OWLLiteral owlLiteral;
         if (argument instanceof String) {
-            owlLiteral = factory.getOWLTypedLiteral((String) argument);
+            owlLiteral = factory.getOWLLiteral((String) argument);
         } else if (argument instanceof Integer) {
-            owlLiteral = factory.getOWLTypedLiteral(((Integer) argument).intValue());
+            owlLiteral = factory.getOWLLiteral(((Integer) argument).intValue());
         } else if (argument instanceof Double) {
-            owlLiteral = factory.getOWLTypedLiteral(((Double) argument).doubleValue());
+            owlLiteral = factory.getOWLLiteral(((Double) argument).doubleValue());
         } else if (argument instanceof Float) {
-            owlLiteral = factory.getOWLTypedLiteral(((Float) argument).floatValue());
+            owlLiteral = factory.getOWLLiteral(((Float) argument).floatValue());
         } else if (argument instanceof Boolean) {
-            owlLiteral = factory.getOWLTypedLiteral(((Boolean) argument).booleanValue());
+            owlLiteral = factory.getOWLLiteral(((Boolean) argument).booleanValue());
         } else {
-            owlLiteral = factory.getOWLStringLiteral(argument.toString());
+            owlLiteral = factory.getOWLLiteral(argument.toString());
         }
 
         return owlLiteral;

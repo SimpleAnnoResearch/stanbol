@@ -28,10 +28,12 @@ import org.apache.stanbol.reasoners.servicesapi.ReasoningServiceException;
 import org.apache.stanbol.reasoners.servicesapi.UnsupportedTaskException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.MissingImportEvent;
+import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
 import org.semanticweb.owlapi.model.MissingImportListener;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderListener;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.SWRLRule;
@@ -77,7 +79,7 @@ public abstract class AbstractOWLApiReasoningService implements OWLApiReasoningS
         log.info("manager: {}", manager);
         // FIXME Which is the other way of doing this?
         // Maybe -> OWLOntologyManagerProperties();
-        manager.setSilentMissingImportsHandling(true);
+        manager.setOntologyLoaderConfiguration(new OWLOntologyLoaderConfiguration().setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT));
         // Listening for missing imports
         manager.addMissingImportListener(new MissingImportListener() {
             @Override
@@ -138,7 +140,7 @@ public abstract class AbstractOWLApiReasoningService implements OWLApiReasoningS
                 OWLOntology output = manager.createOntology();
                 log.debug("Created output ontology: {}", output);
                 try {
-                    inferred.fillOntology(manager, output);
+                    inferred.fillOntology(manager.getOWLDataFactory(), output);
                 } catch (InconsistentOntologyException i) {
                     throw i;
                 } catch (Throwable t) {

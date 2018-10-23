@@ -50,7 +50,7 @@ public class RegistryItemFactoryImpl implements RegistryItemFactory {
 
     @Override
     public Registry createRegistry(OWLOntology o) {
-        return o.isAnonymous() ? null : new RegistryImpl(o.getOntologyID().getOntologyIRI(), o
+        return o.isAnonymous() ? null : new RegistryImpl(o.getOntologyID().getOntologyIRI().get(), o
                 .getOntologyID().toString());
     }
 

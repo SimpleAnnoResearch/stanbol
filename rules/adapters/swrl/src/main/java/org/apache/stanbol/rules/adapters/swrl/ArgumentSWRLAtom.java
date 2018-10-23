@@ -19,6 +19,7 @@ package org.apache.stanbol.rules.adapters.swrl;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.semanticweb.owlapi.model.OWLAnonymousIndividual;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -152,6 +153,12 @@ public class ArgumentSWRLAtom implements SWRLAtom {
         // TODO Auto-generated method stub
         return null;
     }
+    
+    @Override
+    public Stream<SWRLArgument> allArguments() {
+    	// TODO Auto-generated method stub
+    	return null;
+    }
 
     @Override
     public SWRLPredicate getPredicate() {
@@ -177,4 +184,28 @@ public class ArgumentSWRLAtom implements SWRLAtom {
         // TODO Auto-generated method stub
         return null;
     }
+
+	@Override
+	public int initHashCode() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int typeIndex() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int hashIndex() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Stream<?> components() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

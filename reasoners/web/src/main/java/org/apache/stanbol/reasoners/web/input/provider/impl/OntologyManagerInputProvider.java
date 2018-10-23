@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.stanbol.commons.owl.transformation.JenaToOwlConvert;
 import org.apache.stanbol.ontologymanager.servicesapi.scope.Scope;
@@ -30,10 +31,12 @@ import org.apache.stanbol.reasoners.servicesapi.ReasoningServiceInputProvider;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.MissingImportEvent;
+import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
 import org.semanticweb.owlapi.model.MissingImportListener;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderListener;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologySetProvider;
@@ -170,6 +173,11 @@ public class OntologyManagerInputProvider implements ReasoningServiceInputProvid
                 public Set<OWLOntology> getOntologies() {
                     return set;
                 }
+
+				@Override
+				public Stream<OWLOntology> ontologies() {
+					return set.stream();
+				}
             });
             return merger.createMergedOntology(createOWLOntologyManager(),
                 IRI.create("reasoners:input-" + System.currentTimeMillis()));
@@ -190,7 +198,7 @@ public class OntologyManagerInputProvider implements ReasoningServiceInputProvid
 
         // FIXME Which is the other way of doing this?
         // Maybe -> OWLOntologyManagerProperties();
-        manager.setSilentMissingImportsHandling(true);
+        manager.setOntologyLoaderConfiguration(new OWLOntologyLoaderConfiguration().setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT));
         // Listening for missing imports
         manager.addMissingImportListener(new MissingImportListener() {
             @Override

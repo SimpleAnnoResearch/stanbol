@@ -88,9 +88,9 @@ public final class OntologyUtils {
         if (id.getOntologyIRI() == null) throw new IllegalArgumentException(
                 "Cannot encode an OWLOntologyID that is missing an ontologyIRI.");
         String s = "";
-        s += URIUtils.sanitize(id.getOntologyIRI()).toString().replace(":::", "%3A%3A%3A");
+        s += URIUtils.sanitize(id.getOntologyIRI().get()).toString().replace(":::", "%3A%3A%3A");
         if (id.getVersionIRI() != null) s += (":::")
-                                             + URIUtils.sanitize(id.getVersionIRI()).toString()
+                                             + URIUtils.sanitize(id.getVersionIRI().get()).toString()
                                                      .replace(":::", "%3A%3A%3A");
         return s;
     }

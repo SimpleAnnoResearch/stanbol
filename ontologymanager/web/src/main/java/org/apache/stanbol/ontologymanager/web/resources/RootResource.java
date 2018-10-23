@@ -583,7 +583,7 @@ public class RootResource extends AbstractOntologyAccessResource {
         if (!id.isAnonymous() && id.getVersionIRI() == null) {
             IRI viri = IRI.create(requestUri);
             log.debug("Setting version IRI for export : {}", viri);
-            changes.add(new SetOntologyID(o, new OWLOntologyID(id.getOntologyIRI(), viri)));
+            changes.add(new SetOntologyID(o, new OWLOntologyID(id.getOntologyIRI().get(), viri)));
         }
 
         o.getOWLOntologyManager().applyChanges(changes);

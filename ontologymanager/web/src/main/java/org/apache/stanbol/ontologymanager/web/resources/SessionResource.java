@@ -115,7 +115,7 @@ import org.slf4j.LoggerFactory;
  * @author alexdma
  * 
  */
-@Componentlantos31
+@Component
 
 @Service(Object.class)
 @Property(name="javax.ws.rs", boolValue=true)

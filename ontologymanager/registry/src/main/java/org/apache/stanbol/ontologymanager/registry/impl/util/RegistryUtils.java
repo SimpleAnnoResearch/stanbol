@@ -37,7 +37,6 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.util.OWLAxiomVisitorAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +101,7 @@ public final class RegistryUtils {
         final int[] pointsFor = new int[] {0, 0};
         final int[] pointsAgainst = new int[] {0, 0};
 
-        OWLAxiomVisitor v = new OWLAxiomVisitorAdapter() {
+        OWLAxiomVisitor v = new OWLAxiomVisitor() {
 
             @Override
             public void visit(OWLClassAssertionAxiom axiom) {

@@ -29,21 +29,19 @@ import java.util.Set;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.stanbol.commons.web.viewable.Viewable;
 import org.apache.stanbol.commons.web.base.format.KRFormat;
+import org.apache.stanbol.commons.web.viewable.Viewable;
 import org.apache.stanbol.reasoners.web.resources.ReasoningResult;
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
+import org.semanticweb.owlapi.formats.ManchesterSyntaxDocumentFormat;
 import org.semanticweb.owlapi.io.StreamDocumentTarget;
+import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterSyntaxStorer;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOntologyStorer;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
@@ -130,9 +128,9 @@ public class ResponseTaskBuilder {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         if(object instanceof OWLOntology){
             OWLOntology o = (OWLOntology) object;
-            ManchesterOWLSyntaxOntologyStorer mosos = new ManchesterOWLSyntaxOntologyStorer();
+            ManchesterSyntaxStorer mosos = new ManchesterSyntaxStorer();
             try {
-                mosos.storeOntology(o.getOWLOntologyManager(), o, new StreamDocumentTarget(out), new ManchesterOWLSyntaxOntologyFormat());
+                mosos.storeOntology(o, new StreamDocumentTarget(out), new ManchesterSyntaxDocumentFormat());
             } catch (OWLOntologyStorageException e) {
                 log.error("Cannot stream the ontology",e);
                 throw new RuntimeException(e);

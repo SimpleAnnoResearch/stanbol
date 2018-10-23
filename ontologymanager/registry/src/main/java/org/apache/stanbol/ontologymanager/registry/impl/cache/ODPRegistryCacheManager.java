@@ -38,10 +38,12 @@ import org.semanticweb.owlapi.io.OWLOntologyDocumentSource;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.MissingImportEvent;
+import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
 import org.semanticweb.owlapi.model.MissingImportListener;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyAlreadyExistsException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderListener;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
@@ -186,10 +188,11 @@ public final class ODPRegistryCacheManager {
             uris.remove(uri);
             return getOntology(uri);
         }
-        manager.setSilentMissingImportsHandling(true);
+        manager.setOntologyLoaderConfiguration(new OWLOntologyLoaderConfiguration().setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT));
         manager.addMissingImportListener(new MissingImportListener() {
             public void importMissing(MissingImportEvent arg0) {
-                if (!getUnresolvedURIs().contains(arg0.getImportedOntologyURI())) getUnresolvedURIs().add(
+                if (!getUnresolvedURIs().contains(URI.create(arg0.getImportedOntologyURI().getIRIString()
+                		))) getUnresolvedURIs().add(
                     arg0.getImportedOntologyURI().toURI());
             }
         });
@@ -218,10 +221,10 @@ public final class ODPRegistryCacheManager {
                                                                            UnknownOWLOntologyException,
                                                                            OWLOntologyStorageException {
 
-        manager.setSilentMissingImportsHandling(true);
+        manager.setOntologyLoaderConfiguration(new OWLOntologyLoaderConfiguration().setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT));
         manager.addMissingImportListener(new MissingImportListener() {
             public void importMissing(MissingImportEvent arg0) {
-                if (!getUnresolvedURIs().contains(arg0.getImportedOntologyURI())) getUnresolvedURIs().add(
+                if (!getUnresolvedURIs().contains(URI.create(arg0.getImportedOntologyURI().getIRIString()))) getUnresolvedURIs().add(
                     arg0.getImportedOntologyURI().toURI());
             }
         });
@@ -263,7 +266,7 @@ public final class ODPRegistryCacheManager {
         try {
             ont = manager.loadOntologyFromOntologyDocument(IRI.create(uri));
         } catch (OWLOntologyAlreadyExistsException e) {
-            ont = manager.getOntology(e.getOntologyID().getOntologyIRI());
+            ont = manager.getOntology(e.getOntologyID().getOntologyIRI().get());
         }
         File file = newFile();
         cacheOntology(uri, file, ont);
@@ -274,7 +277,7 @@ public final class ODPRegistryCacheManager {
     private static synchronized void cacheOntology(URI physicalRemoteUri, File file, OWLOntology ont) throws UnknownOWLOntologyException,
                                                                                                      OWLOntologyStorageException {
         uris.put(physicalRemoteUri, file);
-        oiri.put(physicalRemoteUri, ont.getOntologyID().getOntologyIRI());
+        oiri.put(physicalRemoteUri, ont.getOntologyID().getOntologyIRI().get());
         manager.setOntologyDocumentIRI(ont, IRI.create(file));
         manager.saveOntology(ont, new RDFXMLOntologyFormat(), IRI.create(file));
     }

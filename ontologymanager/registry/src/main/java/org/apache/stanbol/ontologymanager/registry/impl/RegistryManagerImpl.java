@@ -57,6 +57,7 @@ import org.semanticweb.owlapi.io.IRIDocumentSource;
 import org.semanticweb.owlapi.io.OWLOntologyDocumentSource;
 import org.semanticweb.owlapi.io.StreamDocumentSource;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.MissingImportHandlingStrategy;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAnnotationValue;
@@ -77,7 +78,6 @@ import org.semanticweb.owlapi.model.OWLOntologyAlreadyExistsException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.util.OWLAxiomVisitorAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -230,7 +230,7 @@ public class RegistryManagerImpl implements RegistryManager, RegistryContentList
         OWLOntologyManager mgr = OWLOntologyManagerFactory.createOWLOntologyManager(offlineResources);
         OWLOntologyLoaderConfiguration conf = new OWLOntologyLoaderConfiguration();
         // If we are retaining incomplete registries, do not throw exceptions if imports fail.
-        conf.setSilentMissingImportsHandling(retainIncomplete);
+        conf.setMissingImportHandlingStrategy(retainIncomplete ? MissingImportHandlingStrategy.SILENT : MissingImportHandlingStrategy.THROW_EXCEPTION);
         // Load registries
         Set<OWLOntology> regOnts = new HashSet<OWLOntology>();
         for (String loc : locations) {
@@ -380,7 +380,7 @@ public class RegistryManagerImpl implements RegistryManager, RegistryContentList
          * Scans class assertions and object property values and tries to determine the type of each
          * individual it finds.
          */
-        OWLAxiomVisitor scanner = new OWLAxiomVisitorAdapter() {
+        OWLAxiomVisitor scanner = new OWLAxiomVisitor() {
 
             /*
              * For a given identifier, returns the array of integers whose value determine the likelihood if
@@ -643,15 +643,18 @@ public class RegistryManagerImpl implements RegistryManager, RegistryContentList
         for (OWLOntology o : registries) {
             if (ind instanceof OWLIndividual) {
                 // Get usages of hasOntology as an object property
-                for (OWLIndividual value : ((OWLIndividual) ind).getObjectPropertyValues(hasOntology, o))
+            	o.objectPropertyAssertionAxioms((OWLIndividual)ind).filter(axiom -> axiom.getProperty() == hasOntology).forEach(axiom -> {
+            		OWLIndividual value = axiom.getObject();
                     if (value.isNamed()) ironts.add(value.asOWLNamedIndividual());
+            	});            	
                 // Get usages of hasOntology as an annotation property
-                for (OWLAnnotationAssertionAxiom ann : o.getAnnotationAssertionAxioms(ind.getIRI()))
+            	o.annotationAssertionAxioms(libId).forEach( ann -> {
                     if (hasOntologyAnn.equals(ann.getProperty())) {
                         OWLAnnotationValue value = ann.getValue();
                         if (value instanceof OWLNamedObject) ironts.add((OWLNamedObject) value);
                         else if (value instanceof IRI) ironts.add(df.getOWLNamedIndividual((IRI) value));
                     }
+            	});
             }
         }
         for (OWLNamedObject iront : ironts) {
@@ -691,8 +694,12 @@ public class RegistryManagerImpl implements RegistryManager, RegistryContentList
         for (OWLOntology o : registries) {
             if (ind instanceof OWLIndividual) {
                 // Get usages of isOntologyOf as an object property
-                for (OWLIndividual value : ((OWLIndividual) ind).getObjectPropertyValues(isOntologyOf, o))
+            	
+            	o.objectPropertyAssertionAxioms((OWLIndividual)ind).filter(axiom -> axiom.getProperty() == isOntologyOf).forEach(axiom -> {
+            		OWLIndividual value = axiom.getObject();
                     if (value.isNamed()) libs.add(value.asOWLNamedIndividual());
+            	});            	
+
                 // Get usages of isOntologyOf as an annotation property
                 for (OWLAnnotationAssertionAxiom ann : o.getAnnotationAssertionAxioms(ind.getIRI()))
                     if (isOntologyOfAnn.equals(ann.getProperty())) {

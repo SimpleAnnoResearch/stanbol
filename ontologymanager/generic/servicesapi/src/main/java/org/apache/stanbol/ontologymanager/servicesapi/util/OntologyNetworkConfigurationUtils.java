@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -110,11 +111,11 @@ public final class OntologyNetworkConfigurationUtils {
      */
     public static String[] getScopesToActivate(OWLOntology config) {
 
-        Set<OWLIndividual> scopes = cScope.getIndividuals(config);
+        Set<OWLIndividual> scopes = config.classAssertionAxioms(cScope).map(axiom -> axiom.getIndividual()).collect(Collectors.toSet());
         List<String> result = new ArrayList<String>();
         boolean doActivate = false;
         for (OWLIndividual iScope : scopes) {
-            Set<OWLLiteral> activate = iScope.getDataPropertyValues(activateOnStart, config);
+            Set<OWLLiteral> activate = config.dataPropertyAssertionAxioms(iScope).filter(axiom -> axiom.getProperty() == activateOnStart).map(axiom -> axiom.getObject()).collect(Collectors.toSet());
 
             Iterator<OWLLiteral> it = activate.iterator();
             while (it.hasNext() && !doActivate) {
@@ -161,7 +162,7 @@ public final class OntologyNetworkConfigurationUtils {
     private static String[] getScopeObjectPropertyValues(OWLOntology ontology,
                                                          String individualIRI,
                                                          OWLObjectProperty op) {
-        Set<OWLIndividual> scopes = cScope.getIndividuals(ontology);
+        Set<OWLIndividual> scopes = ontology.classAssertionAxioms(cScope).map(axiom -> axiom.getIndividual()).collect(Collectors.toSet());
         List<String> result = new ArrayList<String>();
 
         OWLIndividual iiScope = null;
@@ -182,7 +183,7 @@ public final class OntologyNetworkConfigurationUtils {
         for (OWLIndividual iScope : scopes) {
             if (iScope.isNamed()) {
                 if (((OWLNamedIndividual) iScope).getIRI().toString().equals(individualIRI)) {
-                    Set<OWLIndividual> values = iScope.getObjectPropertyValues(op, ontology);
+                    Set<OWLIndividual> values = ontology.objectPropertyAssertionAxioms(iScope).filter(axiom -> axiom.getProperty() == op).map(axiom -> axiom.getObject()).collect(Collectors.toSet());
 
                     Iterator<OWLIndividual> it = values.iterator();
                     while (it.hasNext()) {
@@ -207,13 +208,13 @@ public final class OntologyNetworkConfigurationUtils {
     private static String[] getLibraryObjectPropertyValues(OWLOntology ontology,
                                                            String individualIRI,
                                                            OWLObjectProperty op) {
-        Set<OWLIndividual> scopes = cLibrary.getIndividuals(ontology);
+        Set<OWLIndividual> scopes = ontology.classAssertionAxioms(cLibrary).map(axiom -> axiom.getIndividual()).collect(Collectors.toSet());
         List<String> result = new ArrayList<String>();
 
         for (OWLIndividual iLibrary : scopes) {
             if (iLibrary.isNamed()) {
                 if (((OWLNamedIndividual) iLibrary).getIRI().toString().equals(individualIRI)) {
-                    Set<OWLIndividual> values = iLibrary.getObjectPropertyValues(op, ontology);
+                    Set<OWLIndividual> values = ontology.objectPropertyAssertionAxioms(iLibrary).filter(axiom -> axiom.getProperty() == op).map(axiom -> axiom.getObject()).collect(Collectors.toSet());
 
                     Iterator<OWLIndividual> it = values.iterator();
                     while (it.hasNext()) {

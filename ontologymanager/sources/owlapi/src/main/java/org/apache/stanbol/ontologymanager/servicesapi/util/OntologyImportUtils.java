@@ -151,7 +151,7 @@ public final class OntologyImportUtils {
                  * Otherwise, ask the ontology itself (the location of an anonymous ontology may have been
                  * known at creation/loading time, even if another manager built it.)
                  */
-                importIri = o.getOntologyID().getDefaultDocumentIRI();
+                importIri = o.getOntologyID().getDefaultDocumentIRI().get();
             } catch (Exception ex) {
                 logger.error(
                     "Exception caught during tree building. Skipping import of ontology " + o.getOntologyID(),
