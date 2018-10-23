@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.clerezza.commons.rdf.ImmutableGraph;
 import org.apache.clerezza.commons.rdf.Graph;
@@ -279,6 +280,11 @@ if (!this.getCustomSpace().equals(sc.getCustomSpace())) return false;
                     @Override
                     public Set<OWLOntology> getOntologies() {
                         return set;
+                    }
+                    
+                    @Override
+                    public Stream<OWLOntology> ontologies() {
+                    	return set.stream();
                     }
                 };
                 OWLOntologyMerger merger = new OWLOntologyMerger(provider);

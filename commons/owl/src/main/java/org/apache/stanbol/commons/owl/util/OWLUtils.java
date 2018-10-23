@@ -66,7 +66,7 @@ public final class OWLUtils {
         else {
             OWLOntologyID id = o.getOntologyID();
             oiri = id.getOntologyIRI().toString();
-            viri = id.getVersionIRI();
+            viri = id.getVersionIRI().get();
         }
         // Strip fragment or query tokens. TODO do proper URL Encoding.
         while (oiri.endsWith("#") || oiri.endsWith("?"))

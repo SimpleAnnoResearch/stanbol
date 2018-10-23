@@ -16,7 +16,6 @@
  */
 package org.apache.stanbol.commons.owl;
 
-import java.net.URISyntaxException;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.IRI;
@@ -33,7 +32,9 @@ import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
  */
 public class PhonyIRIMapper implements OWLOntologyIRIMapper {
 
-    private Set<IRI> exclusions;
+	private static final long serialVersionUID = 2633262924105303521L;
+
+	private Set<IRI> exclusions;
 
     private IRI blankIri = null;
 
@@ -49,7 +50,7 @@ public class PhonyIRIMapper implements OWLOntologyIRIMapper {
         this.exclusions = exclusions;
         try {
             blankIri = IRI.create(this.getClass().getResource(blankResourcePath));
-        } catch (URISyntaxException e) {
+        } catch (RuntimeException e) {
             // How can it happen?
         }
     }

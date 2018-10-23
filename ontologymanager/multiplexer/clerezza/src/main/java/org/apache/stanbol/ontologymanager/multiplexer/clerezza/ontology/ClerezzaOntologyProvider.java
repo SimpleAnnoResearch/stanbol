@@ -155,8 +155,8 @@ public class ClerezzaOntologyProvider implements
             if (ontologyReference == null || ontologyReference.isAnonymous()) throw new IllegalArgumentException(
                     "An anonymous ontology cannot be mapped. A non-anonymous ontology ID must be forged in these cases.");
             Triple tType, tMaps, tHasOiri = null, tHasViri = null;
-            org.semanticweb.owlapi.model.IRI ontologyIRI = ontologyReference.getOntologyIRI(), versionIri = ontologyReference
-                    .getVersionIRI();
+            org.semanticweb.owlapi.model.IRI ontologyIRI = ontologyReference.getOntologyIRI().get(), versionIri = ontologyReference
+                    .getVersionIRI().get();
             IRI entry = buildResource(ontologyReference);
             tType = new TripleImpl(entry, RDF.type, ENTRY_URIREF);
             tMaps = new TripleImpl(entry, MAPS_TO_GRAPH_URIREF, graphName);
@@ -219,7 +219,7 @@ public class ClerezzaOntologyProvider implements
             // XXX should versionIRI also include the version IRI set by owners? Currently not
 
             // Remember not to sanitize logical identifiers.
-            org.semanticweb.owlapi.model.IRI ontologyIri = publicKey.getOntologyIRI(), versionIri = publicKey.getVersionIRI();
+            org.semanticweb.owlapi.model.IRI ontologyIri = publicKey.getOntologyIRI().get(), versionIri = publicKey.getVersionIRI().get();
             if (ontologyIri == null) throw new IllegalArgumentException(
                     "Cannot build a IRI resource on an anonymous public key!");
 
@@ -1464,7 +1464,7 @@ public class ClerezzaOntologyProvider implements
 
             for (OWLOntologyID ref : listToUse)
                 if (!loaded.contains(ref) && !ref.equals(keymap.getReverseMapping(graphName))) {
-                    changes.add(new AddImport(o, df.getOWLImportsDeclaration(ref.getOntologyIRI())));
+                    changes.add(new AddImport(o, df.getOWLImportsDeclaration(ref.getOntologyIRI().get())));
                     loaded.add(ref);
                 }
             o.getOWLOntologyManager().applyChanges(changes);

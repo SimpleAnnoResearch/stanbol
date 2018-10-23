@@ -64,7 +64,7 @@ class MetaGraphManager {
         // XXX should versionIRI also include the version IRI set by owners? Currently not
 
         // Remember not to sanitize logical identifiers.
-        org.semanticweb.owlapi.model.IRI ontologyIri = publicKey.getOntologyIRI(), versionIri = publicKey.getVersionIRI();
+        org.semanticweb.owlapi.model.IRI ontologyIri = publicKey.getOntologyIRI().get(), versionIri = publicKey.getVersionIRI().get();
         if (ontologyIri == null) throw new IllegalArgumentException(
                 "Cannot build a IRI resource on an anonymous public key!");
         log.debug("Searching for a meta graph entry for public key:");
@@ -132,7 +132,7 @@ class MetaGraphManager {
         if (publicKey == null || publicKey.isAnonymous()) throw new IllegalArgumentException(
                 "An anonymous ontology cannot be mapped. A non-anonymous ontology ID must be forged in these cases.");
         Triple tType, tHasOiri = null, tHasViri = null;
-        org.semanticweb.owlapi.model.IRI ontologyIRI = publicKey.getOntologyIRI(), versionIri = publicKey.getVersionIRI();
+        org.semanticweb.owlapi.model.IRI ontologyIRI = publicKey.getOntologyIRI().get(), versionIri = publicKey.getVersionIRI().get();
         IRI entry = buildResource(publicKey);
         tType = new TripleImpl(entry, RDF.type, ENTRY_URIREF);
         LiteralFactory lf = LiteralFactory.getInstance();

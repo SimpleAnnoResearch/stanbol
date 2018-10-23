@@ -115,7 +115,8 @@ import org.slf4j.LoggerFactory;
  * @author alexdma
  * 
  */
-@Component
+@Componentlantos31
+
 @Service(Object.class)
 @Property(name="javax.ws.rs", boolValue=true)
 @Path("/ontonet/session/{id}")

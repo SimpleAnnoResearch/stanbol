@@ -144,7 +144,7 @@ public class GraphMultiplexer implements Multiplexer {
         // XXX should versionIRI also include the version IRI set by owners? Currently not
 
         // Remember not to sanitize logical identifiers.
-        org.semanticweb.owlapi.model.IRI ontologyIri = publicKey.getOntologyIRI(), versionIri = publicKey.getVersionIRI();
+        org.semanticweb.owlapi.model.IRI ontologyIri = publicKey.getOntologyIRI().get(), versionIri = publicKey.getVersionIRI().get();
         if (ontologyIri == null) throw new IllegalArgumentException(
                 "Cannot build a IRI resource on an anonymous public key!");
         log.debug("Searching for a meta graph entry for public key:");

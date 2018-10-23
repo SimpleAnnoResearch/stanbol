@@ -110,11 +110,11 @@ public class ConversionTester extends TestCase {
         OWLDataProperty dp = factory.getOWLDataProperty(IRI.create(DP));
         OWLObjectProperty op = factory.getOWLObjectProperty(IRI.create(OP));
         OWLAnnotationProperty oa = factory.getOWLAnnotationProperty(IRI.create(label));
-        OWLAnnotation oav = factory.getOWLAnnotation(oa, factory.getOWLStringLiteral(clazzlabel, "en"));
+        OWLAnnotation oav = factory.getOWLAnnotation(oa, factory.getOWLLiteral(clazzlabel, "en"));
         OWLDatatype dt = factory.getOWLDatatype(IRI.create(DATATYPE));
         OWLNamedIndividual sub = factory.getOWLNamedIndividual(IRI.create(SUBJECT));
         OWLNamedIndividual obj = factory.getOWLNamedIndividual(IRI.create(OBJECT));
-        OWLLiteral literal1 = factory.getOWLTypedLiteral(VALUE, dt);
+        OWLLiteral literal1 = factory.getOWLLiteral(VALUE, dt);
         OWLDeclarationAxiom daxiomcls = factory.getOWLDeclarationAxiom(cls); // Classe
         OWLDeclarationAxiom daxiomop = factory.getOWLDeclarationAxiom(op); // obj prop
         OWLDeclarationAxiom daxiomdp = factory.getOWLDeclarationAxiom(dp); // data prop
@@ -540,11 +540,11 @@ public class ConversionTester extends TestCase {
         OWLDataProperty dp = factory.getOWLDataProperty(IRI.create(DP));
         OWLObjectProperty op = factory.getOWLObjectProperty(IRI.create(OP));
         OWLAnnotationProperty oa = factory.getOWLAnnotationProperty(IRI.create(label));
-        OWLAnnotation oav = factory.getOWLAnnotation(oa, factory.getOWLStringLiteral(clazzlabel, "en"));
+        OWLAnnotation oav = factory.getOWLAnnotation(oa, factory.getOWLLiteral(clazzlabel, "en"));
         OWLDatatype dt = factory.getOWLDatatype(IRI.create(DATATYPE));
         OWLNamedIndividual sub = factory.getOWLNamedIndividual(IRI.create(SUBJECT));
         OWLNamedIndividual obj = factory.getOWLNamedIndividual(IRI.create(OBJECT));
-        OWLLiteral literal1 = factory.getOWLTypedLiteral(VALUE, dt);
+        OWLLiteral literal1 = factory.getOWLLiteral(VALUE, dt);
         OWLDeclarationAxiom daxiomcls = factory.getOWLDeclarationAxiom(cls); // Classe
         OWLDeclarationAxiom daxiomop = factory.getOWLDeclarationAxiom(op); // obj prop
         OWLDeclarationAxiom daxiomdp = factory.getOWLDeclarationAxiom(dp); // data prop

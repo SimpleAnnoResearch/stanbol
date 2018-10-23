@@ -41,6 +41,7 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.parameters.Imports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -215,9 +216,9 @@ public class TestOntologyReconciliation {
         assertEquals(expectedId, o1_1.getOntologyID()); // Cannot equal OWLOntology objects
         // Check that axioms match
         log.warn("Plain OWL API seems to be failing to preserve owl:versionInfo. Will test non-annotation axioms only.");
-        assertEquals(o1.getTBoxAxioms(false), o1_1.getTBoxAxioms(false));
+        assertEquals(o1.getTBoxAxioms(Imports.EXCLUDED), o1_1.getTBoxAxioms(Imports.EXCLUDED));
         log.info(" -- TBox axiom check successful.");
-        assertEquals(o1.getABoxAxioms(false), o1_1.getABoxAxioms(false));
+        assertEquals(o1.getABoxAxioms(Imports.EXCLUDED), o1_1.getABoxAxioms(Imports.EXCLUDED));
         log.info(" -- ABox axiom check successful.");
 
         // Now check there are no aliases.
@@ -251,9 +252,9 @@ public class TestOntologyReconciliation {
         assertEquals(expectedId, o1_1.getOntologyID()); // Cannot equal OWLOntology objects
         // Check that axioms match
         log.warn("Plain OWL API seems to be failing to preserve owl:versionInfo. Will test non-annotation axioms only.");
-        assertEquals(o1.getTBoxAxioms(false), o1_1.getTBoxAxioms(false));
+        assertEquals(o1.getTBoxAxioms(Imports.EXCLUDED), o1_1.getTBoxAxioms(Imports.EXCLUDED));
         log.info(" -- TBox axiom check successful.");
-        assertEquals(o1.getABoxAxioms(false), o1_1.getABoxAxioms(false));
+        assertEquals(o1.getABoxAxioms(Imports.EXCLUDED), o1_1.getABoxAxioms(Imports.EXCLUDED));
         log.info(" -- ABox axiom check successful.");
 
         // Now check the alias from the physical URL
@@ -297,11 +298,11 @@ public class TestOntologyReconciliation {
         log.info(" -- (matches actual ontology ID).");
 
         // The unversioned ID should return no match...
-        OWLOntologyID unversioned = new OWLOntologyID(key.getOntologyIRI());
+        OWLOntologyID unversioned = new OWLOntologyID(key.getOntologyIRI().get());
         assertSame(Status.NO_MATCH, ontologyProvider.getStatus(unversioned));
 
         // ...but a query on the available versions should return only the public key.
-        Set<OWLOntologyID> versions = ontologyProvider.listVersions(key.getOntologyIRI());
+        Set<OWLOntologyID> versions = ontologyProvider.listVersions(key.getOntologyIRI().get());
         assertFalse(versions.isEmpty());
         assertSame(1, versions.size());
         assertTrue(versions.contains(id1));
@@ -327,7 +328,7 @@ public class TestOntologyReconciliation {
         assertSame(Status.NO_MATCH, ontologyProvider.getStatus(unversioned));
 
         // ...but a query on the available versions should return both public keys now.
-        versions = ontologyProvider.listVersions(key.getOntologyIRI());
+        versions = ontologyProvider.listVersions(key.getOntologyIRI().get());
         assertFalse(versions.isEmpty());
         assertSame(2, versions.size());
         assertTrue(versions.contains(id1));
@@ -339,9 +340,9 @@ public class TestOntologyReconciliation {
         assertFalse(o1_1.isAnonymous());
         assertEquals(o1.getOntologyID(), o1_1.getOntologyID()); // Cannot equal OWLOntology objects
         log.warn("Plain OWL API seems to be failing to preserve owl:versionInfo. Will test non-annotation axioms only.");
-        assertEquals(o1.getTBoxAxioms(false), o1_1.getTBoxAxioms(false));
+        assertEquals(o1.getTBoxAxioms(Imports.EXCLUDED), o1_1.getTBoxAxioms(Imports.EXCLUDED));
         log.info(" -- TBox axiom check successful.");
-        assertEquals(o1.getABoxAxioms(false), o1_1.getABoxAxioms(false));
+        assertEquals(o1.getABoxAxioms(Imports.EXCLUDED), o1_1.getABoxAxioms(Imports.EXCLUDED));
         log.info(" -- ABox axiom check successful.");
 
         // Check that axioms match for version 2 (therefore differ from each other)
@@ -350,9 +351,9 @@ public class TestOntologyReconciliation {
         assertFalse(o2_1.isAnonymous());
         assertEquals(o2.getOntologyID(), o2_1.getOntologyID()); // Cannot equal OWLOntology objects
         log.warn("Plain OWL API seems to be failing to preserve owl:versionInfo. Will test non-annotation axioms only.");
-        assertEquals(o2.getTBoxAxioms(false), o2_1.getTBoxAxioms(false));
+        assertEquals(o2.getTBoxAxioms(Imports.EXCLUDED), o2_1.getTBoxAxioms(Imports.EXCLUDED));
         log.info(" -- TBox axiom check successful.");
-        assertEquals(o2.getABoxAxioms(false), o2_1.getABoxAxioms(false));
+        assertEquals(o2.getABoxAxioms(Imports.EXCLUDED), o2_1.getABoxAxioms(Imports.EXCLUDED));
         log.info(" -- ABox axiom check successful.");
 
         // There should be no aliases.
@@ -395,9 +396,9 @@ public class TestOntologyReconciliation {
         // Cannot equal two OWLOntology objects, especially if anonymous.
         // Check that they match axiom-wise.
         log.warn("Plain OWL API seems to be failing to preserve owl:versionInfo. Will test non-annotation axioms only.");
-        assertEquals(o1.getTBoxAxioms(false), o1_1.getTBoxAxioms(false));
+        assertEquals(o1.getTBoxAxioms(Imports.EXCLUDED), o1_1.getTBoxAxioms(Imports.EXCLUDED));
         log.info(" -- TBox axiom check successful.");
-        assertEquals(o1.getABoxAxioms(false), o1_1.getABoxAxioms(false));
+        assertEquals(o1.getABoxAxioms(Imports.EXCLUDED), o1_1.getABoxAxioms(Imports.EXCLUDED));
         log.info(" -- ABox axiom check successful.");
 
         // No aliases should have been created.
@@ -439,9 +440,9 @@ public class TestOntologyReconciliation {
         // Cannot equal two OWLOntology objects, especially if anonymous.
         // Check that they match axiom-wise.
         log.warn("Plain OWL API seems to be failing to preserve owl:versionInfo. Will test non-annotation axioms only.");
-        assertEquals(o1.getTBoxAxioms(false), o1_1.getTBoxAxioms(false));
+        assertEquals(o1.getTBoxAxioms(Imports.EXCLUDED), o1_1.getTBoxAxioms(Imports.EXCLUDED));
         log.info(" -- TBox axiom check successful.");
-        assertEquals(o1.getABoxAxioms(false), o1_1.getABoxAxioms(false));
+        assertEquals(o1.getABoxAxioms(Imports.EXCLUDED), o1_1.getABoxAxioms(Imports.EXCLUDED));
         log.info(" -- ABox axiom check successful.");
 
         // No aliases should have been created.

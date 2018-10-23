@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.clerezza.commons.rdf.Graph;
 import org.apache.clerezza.commons.rdf.IRI;
@@ -172,7 +173,7 @@ public class SessionImpl extends AbstractOntologyCollectorImpl implements Sessio
     protected OWLOntology exportToOWLOntology(boolean merge, org.semanticweb.owlapi.model.IRI universalPrefix) {
         OWLOntology o = super.exportToOWLOntology(merge, universalPrefix);
 
-        org.semanticweb.owlapi.model.IRI iri = o.getOntologyID().getOntologyIRI();
+        org.semanticweb.owlapi.model.IRI iri = o.getOntologyID().getOntologyIRI().get();
 
         if (merge) { // Re-merge
             ScopeManager onm = ScopeManagerImpl.get(); // FIXME try to avoid this.
@@ -194,6 +195,11 @@ public class SessionImpl extends AbstractOntologyCollectorImpl implements Sessio
                     @Override
                     public Set<OWLOntology> getOntologies() {
                         return set;
+                    }
+                    
+                    @Override
+                    public Stream<OWLOntology> ontologies() {
+                    	return set.stream();
                     }
                 };
                 OWLOntologyMerger merger = new OWLOntologyMerger(provider);

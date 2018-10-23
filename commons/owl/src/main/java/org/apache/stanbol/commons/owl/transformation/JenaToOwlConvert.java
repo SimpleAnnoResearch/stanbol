@@ -25,30 +25,23 @@ import java.io.ByteArrayOutputStream;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
+import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
+import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLAnnotationAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLDatatypeDefinitionAxiom;
 import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
+import org.semanticweb.owlapi.model.OWLDocumentFormat;
 import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLIndividualAxiom;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyFormat;
 import org.semanticweb.owlapi.model.OWLOntologyID;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
@@ -221,11 +214,11 @@ public class JenaToOwlConvert {
             if (format.equals("TURTLE") || format.equals("RDF/XML")) {
 
                 if (format.equals("TURTLE")) owlmanager.setOntologyFormat(owlmodel,
-                    new TurtleOntologyFormat());
+                    new TurtleDocumentFormat());
                 if (format.equals("RDF/XML")) owlmanager.setOntologyFormat(owlmodel,
-                    new RDFXMLOntologyFormat());
+                    new RDFXMLDocumentFormat());
 
-                OWLOntologyFormat owlformat = owlmanager.getOntologyFormat(owlmodel);
+                OWLDocumentFormat owlformat = owlmanager.getOntologyFormat(owlmodel);
 
                 owlmanager.saveOntology(owlmodel, owlformat, out);
 
@@ -390,96 +383,78 @@ public class JenaToOwlConvert {
             if (entity.isOWLClass()) {
                 OWLClass owldata = entity.asOWLClass();
 
-                Iterator<OWLClassAxiom> entityaxiom = owlmodel.getAxioms(owldata).iterator();
+                owlmodel.axioms(owldata).forEach(
+                		axiom -> manager.addAxiom(ontology, axiom)
+                );
 
-                while (entityaxiom.hasNext())
-                    manager.addAxiom(ontology, entityaxiom.next());
-
-                Iterator<OWLAnnotationAssertionAxiom> annotations = entity.getAnnotationAssertionAxioms(
-                    owlmodel).iterator();
-
-                while (annotations.hasNext())
-                    manager.addAxiom(ontology, annotations.next());
+                ontology.annotationAssertionAxioms(owldata.getIRI()).forEach(
+                		annotationAxiom -> manager.addAxiom(ontology, annotationAxiom)
+                );
             }
 
             // If the entity is a data property
             if (entity.isOWLDataProperty()) {
                 OWLDataProperty owldata = entity.asOWLDataProperty();
 
-                Iterator<OWLDataPropertyAxiom> entityaxiom = owlmodel.getAxioms(owldata).iterator();
+                owlmodel.axioms(owldata).forEach(
+                		axiom -> manager.addAxiom(ontology, axiom)
+                );
 
-                while (entityaxiom.hasNext())
-                    manager.addAxiom(ontology, entityaxiom.next());
-
-                Iterator<OWLAnnotationAssertionAxiom> annotations = entity.getAnnotationAssertionAxioms(
-                    owlmodel).iterator();
-
-                while (annotations.hasNext())
-                    manager.addAxiom(ontology, annotations.next());
+                ontology.annotationAssertionAxioms(owldata.getIRI()).forEach(
+                		annotationAxiom -> manager.addAxiom(ontology, annotationAxiom)
+                );
             }
 
             // If the entity is an object property
             if (entity.isOWLObjectProperty()) {
                 OWLObjectProperty owldata = entity.asOWLObjectProperty();
 
-                Iterator<OWLObjectPropertyAxiom> entityaxiom = owlmodel.getAxioms(owldata).iterator();
+                owlmodel.axioms(owldata).forEach(
+                		axiom -> manager.addAxiom(ontology, axiom)
+                );
 
-                while (entityaxiom.hasNext())
-                    manager.addAxiom(ontology, entityaxiom.next());
-
-                Iterator<OWLAnnotationAssertionAxiom> annotations = entity.getAnnotationAssertionAxioms(
-                    owlmodel).iterator();
-
-                while (annotations.hasNext())
-                    manager.addAxiom(ontology, annotations.next());
+                ontology.annotationAssertionAxioms(owldata.getIRI()).forEach(
+                		annotationAxiom -> manager.addAxiom(ontology, annotationAxiom)
+                );
             }
 
             // If the entity is a data type
             if (entity.isOWLDatatype()) {
                 OWLDatatype owldata = entity.asOWLDatatype();
 
-                Iterator<OWLDatatypeDefinitionAxiom> entityaxiom = owlmodel.getAxioms(owldata).iterator();
+                owlmodel.axioms(owldata).forEach(
+                		axiom -> manager.addAxiom(ontology, axiom)
+                );
 
-                while (entityaxiom.hasNext())
-                    manager.addAxiom(ontology, entityaxiom.next());
-
-                Iterator<OWLAnnotationAssertionAxiom> annotations = entity.getAnnotationAssertionAxioms(
-                    owlmodel).iterator();
-
-                while (annotations.hasNext())
-                    manager.addAxiom(ontology, annotations.next());
+                ontology.annotationAssertionAxioms(owldata.getIRI()).forEach(
+                		annotationAxiom -> manager.addAxiom(ontology, annotationAxiom)
+                );
             }
 
             // If the entity is an individual
             if (entity.isOWLNamedIndividual()) {
                 OWLNamedIndividual owldata = entity.asOWLNamedIndividual();
 
-                Iterator<OWLIndividualAxiom> entityaxiom = owlmodel.getAxioms(owldata).iterator();
+                owlmodel.axioms(owldata).forEach(
+                		axiom -> manager.addAxiom(ontology, axiom)
+                );
 
-                while (entityaxiom.hasNext())
-                    manager.addAxiom(ontology, entityaxiom.next());
-
-                Iterator<OWLAnnotationAssertionAxiom> annotations = entity.getAnnotationAssertionAxioms(
-                    owlmodel).iterator();
-
-                while (annotations.hasNext())
-                    manager.addAxiom(ontology, annotations.next());
+                ontology.annotationAssertionAxioms(owldata.getIRI()).forEach(
+                		annotationAxiom -> manager.addAxiom(ontology, annotationAxiom)
+                );
             }
 
             // If the entity is an annotations property
             if (entity.isOWLAnnotationProperty()) {
                 OWLAnnotationProperty owldata = entity.asOWLAnnotationProperty();
 
-                Iterator<OWLAnnotationAxiom> entityaxiom = owlmodel.getAxioms(owldata).iterator();
+                owlmodel.axioms(owldata).forEach(
+                		axiom -> manager.addAxiom(ontology, axiom)
+                );
 
-                while (entityaxiom.hasNext())
-                    manager.addAxiom(ontology, entityaxiom.next());
-
-                Iterator<OWLAnnotationAssertionAxiom> annotations = entity.getAnnotationAssertionAxioms(
-                    owlmodel).iterator();
-
-                while (annotations.hasNext())
-                    manager.addAxiom(ontology, annotations.next());
+                ontology.annotationAssertionAxioms(owldata.getIRI()).forEach(
+                		annotationAxiom -> manager.addAxiom(ontology, annotationAxiom)
+                );
             }
 
             OntModel ontmodel = ModelOwlToJenaConvert(ontology, format);

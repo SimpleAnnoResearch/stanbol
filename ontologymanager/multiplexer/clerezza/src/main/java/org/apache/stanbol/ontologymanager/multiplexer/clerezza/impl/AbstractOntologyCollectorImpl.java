@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 import org.apache.clerezza.commons.rdf.ImmutableGraph;
 import org.apache.clerezza.commons.rdf.Literal;
@@ -394,6 +395,11 @@ public abstract class AbstractOntologyCollectorImpl implements OntologyCollector
                     public Set<OWLOntology> getOntologies() {
                         return set;
                     }
+                    
+                    @Override
+                    public Stream<OWLOntology> ontologies() {
+                    	return set.stream();
+                    }
                 };
                 OWLOntologyMerger merger = new OWLOntologyMerger(provider);
                 try {
@@ -607,11 +613,16 @@ public abstract class AbstractOntologyCollectorImpl implements OntologyCollector
                 public Set<OWLOntology> getOntologies() {
                     return set;
                 }
+                
+                @Override
+                public Stream<OWLOntology> ontologies() {
+                	return set.stream();
+                }
             };
             OWLOntologyMerger merger = new OWLOntologyMerger(provider);
             try {
                 o = merger.createMergedOntology(OWLManager.createOWLOntologyManager(),
-                    ontologyId.getOntologyIRI());
+                    ontologyId.getOntologyIRI().get());
             } catch (OWLOntologyCreationException e) {
                 log.error("Failed to merge imports for ontology " + ontologyId, e);
                 // do not reassign the root ontology

@@ -135,17 +135,18 @@ public final class OntologyNetworkConfigurationUtils {
      * @return
      */
     public static String[] getScopes(OWLOntology config) {
-        Set<OWLIndividual> scopes = cScope.getIndividuals(config);
         List<String> result = new ArrayList<String>();
-        for (OWLIndividual iScope : scopes) {
-            for (OWLClassExpression sce : iScope.getTypes(config)) {
+        config.classAssertionAxioms(cScope).forEach(axiom -> {
+        	OWLIndividual iScope = axiom.getIndividual();
+        	config.classAssertionAxioms(iScope).forEach(axiom2 -> {
+        		OWLClassExpression sce = axiom2.getClassExpression();
                 if (sce.containsConjunct(cScope)) {
                     if (iScope.isNamed()) {
                         result.add(((OWLNamedIndividual) iScope).getIRI().toString());
                     }
-                }
-            }
-        }
+                }        		
+        	});
+        });
         return result.toArray(EMPTY_IRI_ARRAY);
     }
 

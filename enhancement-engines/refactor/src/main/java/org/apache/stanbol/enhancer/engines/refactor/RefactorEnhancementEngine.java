@@ -344,7 +344,7 @@ public class RefactorEnhancementEngine extends AbstractEnhancementEngine<Runtime
              */
             for (OWLOntologyID id : session.listManagedOntologies()) {
                 try {
-                    String key = ontologyProvider.getKey(id.getOntologyIRI());
+                    String key = ontologyProvider.getKey(id.getOntologyIRI().get());
                     ontologyProvider.getStore().deleteGraph(new IRI(key));
                 } catch (Exception ex) {
                     log.error("Failed to delete triple collection " + id, ex);
