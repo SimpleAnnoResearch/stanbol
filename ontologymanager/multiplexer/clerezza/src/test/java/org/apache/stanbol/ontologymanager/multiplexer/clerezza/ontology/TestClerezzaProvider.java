@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.clerezza.rdf.core.access.TcProvider;
 import org.apache.stanbol.ontologymanager.core.OfflineConfigurationImpl;
@@ -108,12 +109,14 @@ public class TestClerezzaProvider {
         Iterator<OWLOntology> it = oAll.iterator();
         OWLOntology o1 = it.next();
         OWLOntology o2 = it.next();
-        for (OWLNamedIndividual i : o1.getIndividualsInSignature()) {
-            Set<OWLClassExpression> tAll = i.getTypes(oAll), t1 = i.getTypes(o1), t2 = i.getTypes(o2);
+        o1.individualsInSignature().forEach(i -> {
+            Set<OWLClassExpression> tAll = oAll.stream().flatMap(ontology -> ontology.classAssertionAxioms(i).map(axiom -> axiom.getClassExpression())).collect(Collectors.toSet());
+            Set<OWLClassExpression> t1 = o1.classAssertionAxioms(i).map(axiom -> axiom.getClassExpression()).collect(Collectors.toSet());
+            Set<OWLClassExpression> t2 = o2.classAssertionAxioms(i).map(axiom -> axiom.getClassExpression()).collect(Collectors.toSet());
             assertTrue(tAll.containsAll(t1)); // Should be obvious from the OWL API
             assertTrue(tAll.containsAll(t2)); // Should be obvious from the OWL API
             assertFalse(t1.containsAll(t2));
             assertFalse(t2.containsAll(t1));
-        }
+        });
     }
 }

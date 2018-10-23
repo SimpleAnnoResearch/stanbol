@@ -111,14 +111,14 @@ public class TestOntologySpaces {
     @Test
     public void testAddOntology() throws Exception {
         OntologySpace space = null;
-        IRI logicalId = nonexSrc.getRootOntology().getOntologyID().getOntologyIRI();
+        IRI logicalId = nonexSrc.getRootOntology().getOntologyID().getOntologyIRI().get();
 
         space = factory.createCustomOntologySpace("testAddOntology", dropSrc);
         space.addOntology(minorSrc);
         space.addOntology(nonexSrc);
 
         assertTrue(space.hasOntology(logicalId));
-        logicalId = dropSrc.getRootOntology().getOntologyID().getOntologyIRI();
+        logicalId = dropSrc.getRootOntology().getOntologyID().getOntologyIRI().get();
         assertTrue(space.hasOntology(logicalId));
     }
 
@@ -137,7 +137,7 @@ public class TestOntologySpaces {
     @Test
     public void testCreateSpace() throws Exception {
         OntologySpace space = factory.createCustomOntologySpace("testCreateSpace", dropSrc);
-        IRI logicalId = dropSrc.getRootOntology().getOntologyID().getOntologyIRI();
+        IRI logicalId = dropSrc.getRootOntology().getOntologyID().getOntologyIRI().get();
         assertTrue(space.hasOntology(logicalId));
     }
 
@@ -233,13 +233,13 @@ public class TestOntologySpaces {
         OntologySpace space = null;
         space = factory.createCustomOntologySpace("testRemoveCustomOntology", dropSrc);
 
-        IRI dropId = dropSrc.getRootOntology().getOntologyID().getOntologyIRI();
-        IRI nonexId = nonexSrc.getRootOntology().getOntologyID().getOntologyIRI();
+        IRI dropId = dropSrc.getRootOntology().getOntologyID().getOntologyIRI().get();
+        IRI nonexId = nonexSrc.getRootOntology().getOntologyID().getOntologyIRI().get();
 
         space.addOntology(inMemorySrc);
         space.addOntology(nonexSrc);
         // The other remote ontologies may change base IRI...
-        assertTrue(space.hasOntology(ont.getOntologyID().getOntologyIRI()));
+        assertTrue(space.hasOntology(ont.getOntologyID().getOntologyIRI().get()));
         assertTrue(space.hasOntology(dropId));
         assertTrue(space.hasOntology(nonexId));
 
