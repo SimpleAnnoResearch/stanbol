@@ -7,3 +7,8 @@ dependency-reduced-pom.xml
 data
 launchers/stanbol
 launchers/bundles
+enhancement-engines/topic/engine/src/main/resources/data-files/default-topic-model.solrindex.zip
+enhancement-engines/topic/engine/src/main/resources/data-files/default-topic-trainingset.solrindex.zip
+enhancement-engines/topic/engine/src/main/resources/data-files/shingle-topic-model.solrindex.zip
+entityhub/indexing/source/sesame/memorystore.data
+ontologymanager/generic/servicesapi/src/main/resources/ontologies/catalog-v001.xml
