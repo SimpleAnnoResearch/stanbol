@@ -47,16 +47,10 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Embed-Dependency>
-              owlapi-api, owlapi-apibinding, owlapi-debugging, 
-              owlapi-dlsyntax, owlapi-examples, owlapi-functional, 
-              owlapi-impl, owlapi-krss, owlapi-latex, owlapi-mansyntax,
-              owlapi-modularity, owlapi-normalform, owlapi-obo,
-              owlapi-owlxml, owlapi-rdfapi, owlapi-rdfxml,
-              owlapi-reasoner, owlapi-util, owlapi-turtle,
-              owlapi-metrics, owlapi-change, owlapi-owlexpression
+            <!-- Embed-Dependency>
+              owlapi-osgidistribution
             </Embed-Dependency>
-            <Embed-Transitive>false</Embed-Transitive>
+            <Embed-Transitive>true</Embed-Transitive-->
             <Private-Package>
               org.apache.stanbol.commons.owl.web; version=${project.version} 
             </Private-Package>
@@ -71,8 +65,7 @@
               org.coode.owlapi.*;version=${owlapi-version},
               org.coode.string;version=${owlapi-version},
               org.coode.xml;version=${owlapi-version},
-              uk.ac.manchester.cs.bhig.util;version=${owlapi-version},
-              uk.ac.manchester.cs.owl.*;version=${owlapi-version}
+              uk.ac.manchester.cs.*;version=${owlapi-version}
             </_exportcontents>
             <Import-Package>
               org.apache.stanbol.commons.web.base; provide:=true,
@@ -87,8 +80,8 @@
               org.coode.owlapi.*,
               org.coode.string,
               org.coode.xml,
-              uk.ac.manchester.cs.bhig.util,
-              uk.ac.manchester.cs.owl.*,
+              uk.ac.manchester.cs.*,
+              com.carrotsearch.hppcrt.*,
               *
             </Import-Package>
             <_nouses>true</_nouses>
@@ -139,23 +132,12 @@
     <artifactId>jena-arq</artifactId>
   </dependency>
 
-    <dependency>
-      <groupId>net.sourceforge.owlapi</groupId>
-      <artifactId>owlapi-api</artifactId>
-      <version>${owlapi-version}</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sourceforge.owlapi</groupId>
-      <artifactId>owlapi-apibinding</artifactId>
-      <version>${owlapi-version}</version>
-    </dependency>
-
-
 	<!-- https://mvnrepository.com/artifact/net.sourceforge.owlapi/owlapi-osgidistribution -->
 	<dependency>
 		<groupId>net.sourceforge.owlapi</groupId>
 		<artifactId>owlapi-osgidistribution</artifactId>
-		<version>5.1.7</version>
+		<version>${owlapi-version}</version>
+		<scope>provided</scope>
 	</dependency>
 
 
