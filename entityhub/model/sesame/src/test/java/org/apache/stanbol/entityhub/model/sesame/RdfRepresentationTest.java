@@ -36,11 +36,12 @@ import org.apache.stanbol.entityhub.test.model.RepresentationTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.model.BNode;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Model;
-import org.openrdf.model.URI;
 import org.openrdf.model.impl.BNodeImpl;
 import org.openrdf.model.impl.LiteralImpl;
+import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.DCTERMS;
 import org.openrdf.model.vocabulary.RDF;
@@ -208,7 +209,7 @@ public class RdfRepresentationTest extends RepresentationTest {
      */
     @Test
     public void testBNodeFiltering(){
-        URI concept = new URIImpl("http://example.org/mySkos#Concept123");
+        IRI concept =  SimpleValueFactory.getInstance().createIRI("http://example.org/mySkos#Concept123");
         Representation r = createRepresentation(concept.stringValue());
         assertTrue(r instanceof RdfRepresentation);
         RdfRepresentation rep = (RdfRepresentation)r;

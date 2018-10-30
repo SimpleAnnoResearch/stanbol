@@ -34,7 +34,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Model;
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
@@ -80,7 +80,7 @@ public class SesameYardTest extends YardTest {
         //now add the statement and see if an IllegalStateException is thrown
         /*
          * The triple within this Statement is internally used to "mark" the
-         * URI of the Representation as 
+         * IRI of the Representation as 
          */
         test.add(NamespaceEnum.rdf+"type", representationType);
     }
@@ -89,12 +89,12 @@ public class SesameYardTest extends YardTest {
     public void testBNodeSupport() throws YardException, RepositoryException {
         RepositoryConnection con = repo.getConnection();
         org.openrdf.model.ValueFactory sesameFactory = con.getValueFactory();
-        URI subject = sesameFactory.createURI("urn:test.sesameyard:bnodesupport.subject");
-        URI property = sesameFactory.createURI("urn:test.sesameyard:bnodesupport.property");
-        URI value = sesameFactory.createURI("urn:test.sesameyard:bnodesupport.value");
-        URI property2 = sesameFactory.createURI("urn:test.sesameyard:bnodesupport.property2");
-        URI loop1 = sesameFactory.createURI("urn:test.sesameyard:bnodesupport.loop1");
-        URI loop2 = sesameFactory.createURI("urn:test.sesameyard:bnodesupport.loop2");
+        IRI subject = sesameFactory.createIRI("urn:test.sesameyard:bnodesupport.subject");
+        IRI property = sesameFactory.createIRI("urn:test.sesameyard:bnodesupport.property");
+        IRI value = sesameFactory.createIRI("urn:test.sesameyard:bnodesupport.value");
+        IRI property2 = sesameFactory.createIRI("urn:test.sesameyard:bnodesupport.property2");
+        IRI loop1 = sesameFactory.createIRI("urn:test.sesameyard:bnodesupport.loop1");
+        IRI loop2 = sesameFactory.createIRI("urn:test.sesameyard:bnodesupport.loop2");
         BNode bnode1 = sesameFactory.createBNode();
         BNode bnode2 = sesameFactory.createBNode();
         

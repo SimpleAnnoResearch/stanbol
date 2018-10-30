@@ -20,11 +20,12 @@ package org.apache.stanbol.entityhub.web.writer.sesame;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -49,12 +50,14 @@ import org.apache.stanbol.entityhub.web.fieldquery.FieldQueryToJsonUtils;
 import org.apache.stanbol.entityhub.yard.sesame.SesameQueryResultList;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Model;
-import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.impl.ValueFactoryImpl;
+import static org.openrdf.rio.RDFFormat.*;
+
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.Rio;
@@ -71,24 +74,24 @@ public class SesameModelWriter implements ModelWriter {
     private final static RdfValueFactory valueFactory = RdfValueFactory.getInstance();
     private final static ValueFactory sesameFactory = ValueFactoryImpl.getInstance();
 
-    private final static URI FOAF_DOCUMENT = sesameFactory.createURI(NamespaceEnum.foaf+"Document");
-    private final static URI FOAF_PRIMARY_TOPIC = sesameFactory.createURI(NamespaceEnum.foaf+"primaryTopic");
-    private final static URI FOAF_PRIMARY_TOPIC_OF = sesameFactory.createURI(NamespaceEnum.foaf+"isPrimaryTopicOf");
-    private final static URI RDF_TYPE = sesameFactory.createURI(NamespaceEnum.rdf+"type");
-    private final static URI EH_SIGN_SITE = sesameFactory.createURI(RdfResourceEnum.site.getUri());
+    private final static IRI FOAF_DOCUMENT = sesameFactory.createIRI(NamespaceEnum.foaf+"Document");
+    private final static IRI FOAF_PRIMARY_TOPIC = sesameFactory.createIRI(NamespaceEnum.foaf+"primaryTopic");
+    private final static IRI FOAF_PRIMARY_TOPIC_OF = sesameFactory.createIRI(NamespaceEnum.foaf+"isPrimaryTopicOf");
+    private final static IRI RDF_TYPE = sesameFactory.createIRI(NamespaceEnum.rdf+"type");
+    private final static IRI EH_SIGN_SITE = sesameFactory.createIRI(RdfResourceEnum.site.getUri());
     
     /**
-     * The URI used for the query result list (static for all responses)
+     * The IRI used for the query result list (static for all responses)
      */
-    private static final URI QUERY_RESULT_LIST = sesameFactory.createURI(RdfResourceEnum.QueryResultSet.getUri());
+    private static final IRI QUERY_RESULT_LIST = sesameFactory.createIRI(RdfResourceEnum.QueryResultSet.getUri());
     /**
      * The property used for all results
      */
-    private static final URI QUERY_RESULT = sesameFactory.createURI(RdfResourceEnum.queryResult.getUri());
+    private static final IRI QUERY_RESULT = sesameFactory.createIRI(RdfResourceEnum.queryResult.getUri());
     /**
      * The property used for the JSON serialised FieldQuery (STANBOL-298)
      */
-    private static final URI FIELD_QUERY = sesameFactory.createURI(RdfResourceEnum.query.getUri());
+    private static final IRI FIELD_QUERY = sesameFactory.createIRI(RdfResourceEnum.query.getUri());
 
     
     @Reference(cardinality=ReferenceCardinality.OPTIONAL_UNARY)
@@ -104,10 +107,10 @@ public class SesameModelWriter implements ModelWriter {
     @Activate
     protected void activate(ComponentContext ctx){
         //parse the supported RDF formats
-        Collection<String> mts = new LinkedHashSet<String>();
-        for(RDFFormat format : RDFFormat.values()){
-            mts.addAll(format.getMIMETypes());
-        }
+        Collection<String> mts = new LinkedHashSet<String>(
+                Stream.of(RDFXML, NTRIPLES, TURTLE, N3, TRIX, TRIG, BINARY, NQUADS, JSONLD, RDFJSON, RDFA)
+                	.flatMap(format -> format.getMIMETypes().stream()).collect(Collectors.toSet())
+        );
         List<MediaType> formats = new ArrayList<MediaType>(mts.size());
         for(String format : mts){
             try {
@@ -190,7 +193,7 @@ public class SesameModelWriter implements ModelWriter {
      * @param mediaType
      */
     private void writeRdf(Model data, OutputStream out, MediaType mediaType) {
-        RDFFormat rdfFormat = Rio.getWriterFormatForMIMEType(mediaType.toString());
+        RDFFormat rdfFormat = Rio.getWriterFormatForMIMEType(mediaType.toString()).get();
         if(rdfFormat == null){
             throw new IllegalStateException("JAX-RS called for unsupported mediaType '"
                 + mediaType +"'! If this is a valid RDF type this indicates a missing "
@@ -236,14 +239,14 @@ public class SesameModelWriter implements ModelWriter {
      * @param sign the sign
      */
     private void addEntityTriplesToGraph(Model graph, Entity sign) {
-        URI id = sesameFactory.createURI(sign.getId());
-        URI metaId = sesameFactory.createURI(sign.getMetadata().getId());
+        IRI id = sesameFactory.createIRI(sign.getId());
+        IRI metaId = sesameFactory.createIRI(sign.getMetadata().getId());
         //add the FOAF triples between metadata and content
         graph.add(id, FOAF_PRIMARY_TOPIC_OF, metaId);
         graph.add(metaId, FOAF_PRIMARY_TOPIC, metaId);
         graph.add(metaId, RDF_TYPE, FOAF_DOCUMENT);
         //add the site to the metadata
-        //TODO: this should be the HTTP URI and not the id of the referenced site
+        //TODO: this should be the HTTP IRI and not the id of the referenced site
         Literal siteName = sesameFactory.createLiteral(sign.getSite());
         graph.add(metaId, EH_SIGN_SITE, siteName);
         
@@ -256,7 +259,7 @@ public class SesameModelWriter implements ModelWriter {
             resultGraph = new LinkedHashModel(); //create a new ImmutableGraph
             for (Object result : resultList) {
                 //add a triple to each reference in the result set
-                resultGraph.add(QUERY_RESULT_LIST, QUERY_RESULT, sesameFactory.createURI(result.toString()));
+                resultGraph.add(QUERY_RESULT_LIST, QUERY_RESULT, sesameFactory.createIRI(result.toString()));
             }
         } else {
             //first determine the type of the resultList
@@ -278,7 +281,7 @@ public class SesameModelWriter implements ModelWriter {
                     //now add the Sign specific triples and add result triples
                     //to the Sign IDs
                     for (Object result : resultList) {
-                        URI signId = sesameFactory.createURI(((Entity) result).getId());
+                        IRI signId = sesameFactory.createIRI(((Entity) result).getId());
                         addEntityTriplesToGraph(resultGraph, (Entity) result);
                         resultGraph.add(QUERY_RESULT_LIST, QUERY_RESULT, signId);
                     }
@@ -287,13 +290,13 @@ public class SesameModelWriter implements ModelWriter {
                 resultGraph = new LinkedHashModel(); //create a new graph
                 if (Representation.class.isAssignableFrom(type)) {
                     for (Object result : resultList) {
-                        URI resultId;
+                        IRI resultId;
                         if (!isSignType) {
                             addRDFTo(resultGraph, (Representation) result);
-                            resultId = sesameFactory.createURI(((Representation) result).getId());
+                            resultId = sesameFactory.createIRI(((Representation) result).getId());
                         } else {
                             addRDFTo(resultGraph, (Entity) result);
-                            resultId = sesameFactory.createURI(((Entity) result).getId());
+                            resultId = sesameFactory.createIRI(((Entity) result).getId());
                         }
                         //Note: In case of Representation this Triple points to
                         //      the representation. In case of Signs it points to

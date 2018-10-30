@@ -54,7 +54,7 @@ import org.openrdf.model.Literal;
 import org.openrdf.model.Model;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.Repository;
@@ -110,9 +110,9 @@ public class RdfIndexingSource extends AbstractSesameBackend implements EntityDa
      */
     public static final String DEFAULT_IMPORTED_FOLDER_NAME = "imported";
 
-    public static final Object PARAM_BASE_URI = "baseUri";
+    public static final Object PARAM_BASE_IRI = "baseUri";
     
-    public static final String DEFAULT_BASE_URI = "http://www.fake-base-uri.org/base-uri/";
+    public static final String DEFAULT_BASE_IRI = "http://www.fake-base-uri.org/base-uri/";
 
     protected ValueFactory sesameFactory;
     
@@ -176,8 +176,8 @@ public class RdfIndexingSource extends AbstractSesameBackend implements EntityDa
     public void setConfiguration(Map<String,Object> config) {
         IndexingConfig indexingConfig = (IndexingConfig)config.get(IndexingConfig.KEY_INDEXING_CONFIG);
         //(0) parse the baseUri
-        Object value = config.get(PARAM_BASE_URI);
-        baseUri = value == null ? DEFAULT_BASE_URI : value.toString();
+        Object value = config.get(PARAM_BASE_IRI);
+        baseUri = value == null ? DEFAULT_BASE_IRI : value.toString();
         //(1) init the Sesame Repository from the RDF config
         value = config.get(PARAM_REPOSITORY_CONFIG);
         File repoConfigFile = indexingConfig.getConfigFile(
@@ -191,7 +191,7 @@ public class RdfIndexingSource extends AbstractSesameBackend implements EntityDa
                 + "to the config '"+indexingConfig.getConfigFolder()+"'folder)");
         }
         RepositoryFactory factory = RepositoryRegistry.getInstance().get(
-            repoConfig.getRepositoryImplConfig().getType());
+            repoConfig.getRepositoryImplConfig().getType()).get();
         if(factory == null){
             throw new IllegalStateException("Unable to initialise Repository (id: "
                 + repoConfig.getID()+ ", title: "+repoConfig.getTitle() + ", impl: "
@@ -283,9 +283,9 @@ public class RdfIndexingSource extends AbstractSesameBackend implements EntityDa
             configRepo.initialize();
             con = configRepo.getConnection();
             //We need to load the configuration into a context
-            org.openrdf.model.URI configContext = con.getValueFactory().createURI(
+            org.openrdf.model.IRI configContext = con.getValueFactory().createIRI(
                 "urn:stanbol.entityhub:indexing.source.sesame:config.context");
-            RDFFormat format = Rio.getParserFormatForFileName(repoConfigFile.getName());
+            RDFFormat format = Rio.getParserFormatForFileName(repoConfigFile.getName()).get();
             try {
                 con.add(new InputStreamReader(
                     new FileInputStream(repoConfigFile),Charset.forName("UTF-8")), 
@@ -392,7 +392,7 @@ public class RdfIndexingSource extends AbstractSesameBackend implements EntityDa
     public Representation getEntityData(String id) {
         try {
             return createRepresentationGraph(getEntityDataProviderConnection(),
-                sesameFactory.createURI(id));
+                sesameFactory.createIRI(id));
         } catch (RepositoryException e) {
             ungetEntityDataProviderConnection();
             throw new IllegalStateException("Unable to create Representation '"
@@ -413,7 +413,7 @@ public class RdfIndexingSource extends AbstractSesameBackend implements EntityDa
     protected class RdfEntityDataIterator implements EntityDataIterator {
 
         protected final RepositoryConnection connection;
-        protected final CloseableIteration<URI,RepositoryException> subjectItr;
+        protected final CloseableIteration<IRI,RepositoryException> subjectItr;
         protected final boolean followBNodes;
 
         /**
@@ -424,23 +424,23 @@ public class RdfIndexingSource extends AbstractSesameBackend implements EntityDa
         protected RdfEntityDataIterator(boolean followBNodes,
                 boolean includeInferred, Resource...contexts) throws RepositoryException{
             this.connection = repository.getConnection();
-            CloseableIteration<URI, RepositoryException> converter = 
-                    new ConvertingIteration<Statement, URI, RepositoryException>(
+            CloseableIteration<IRI, RepositoryException> converter = 
+                    new ConvertingIteration<Statement, IRI, RepositoryException>(
                             connection.getStatements(null, null, null, includeInferred, contexts)) {
                 @Override
-                protected URI convert(Statement sourceObject) throws RepositoryException {
+                protected IRI convert(Statement sourceObject) throws RepositoryException {
                     Resource r = sourceObject.getSubject();
-                    return r instanceof URI ? (URI)r : null;
+                    return r instanceof IRI ? (IRI)r : null;
                 }
             };
-            CloseableIteration<URI,RepositoryException> filter = 
-                    new FilterIteration<URI,RepositoryException>(converter){
+            CloseableIteration<IRI,RepositoryException> filter = 
+                    new FilterIteration<IRI,RepositoryException>(converter){
                 @Override
-                protected boolean accept(URI object) throws RepositoryException {
+                protected boolean accept(IRI object) throws RepositoryException {
                     return object != null;
                 }    
             };
-            this.subjectItr = new DistinctIteration<URI, RepositoryException>(filter);
+            this.subjectItr = new DistinctIteration<IRI, RepositoryException>(filter);
             this.followBNodes = followBNodes;
             entityDataIterators.add(this);
         }
@@ -457,7 +457,7 @@ public class RdfIndexingSource extends AbstractSesameBackend implements EntityDa
 
         @Override
         public String next() {
-            URI subject = null;
+            IRI subject = null;
             try {
                 subject = subjectItr.next();
                 currentRep = vf.createRdfRepresentation(subject);
@@ -479,7 +479,7 @@ public class RdfIndexingSource extends AbstractSesameBackend implements EntityDa
          * @param model the model to add the Statements
          * @throws RepositoryException
          */
-        protected void createRepresentation(org.openrdf.model.URI subject, final Model model)
+        protected void createRepresentation(org.openrdf.model.IRI subject, final Model model)
                 throws RepositoryException {
             RepositoryResult<Statement> stmts = connection.getStatements(
                 subject,null,null,includeInferred,contexts);
@@ -552,7 +552,7 @@ public class RdfIndexingSource extends AbstractSesameBackend implements EntityDa
      * @throws RepositoryException 
      */
     protected RdfRepresentation createRepresentationGraph(RepositoryConnection con, 
-            org.openrdf.model.URI uri) throws RepositoryException{
+            org.openrdf.model.IRI uri) throws RepositoryException{
         RdfRepresentation rep = vf.createRdfRepresentation(uri);
         Model model = rep.getModel();
         extractRepresentation(con, model, uri, 
@@ -602,13 +602,13 @@ public class RdfIndexingSource extends AbstractSesameBackend implements EntityDa
     }
 
     @Override
-    public Literal createLiteral(String content, Locale language, java.net.URI type) {
+    public Literal createLiteral(String content, Locale language, IRI type) {
         return createLiteralInternal(sesameFactory, content, language, type);
     }
 
     @Override
-    public org.openrdf.model.URI createURI(String uri) {
-        return createURIInternal(sesameFactory, uri);
+    public org.openrdf.model.IRI createIRI(String uri) {
+        return createIRIInternal(sesameFactory, uri);
     }
 
     @Override
@@ -699,11 +699,11 @@ public class RdfIndexingSource extends AbstractSesameBackend implements EntityDa
     }
 
     
-    private org.openrdf.model.URI asUri(Value property){
-        if(property instanceof org.openrdf.model.URI){
-            return (org.openrdf.model.URI)property;
+    private org.openrdf.model.IRI asUri(Value property){
+        if(property instanceof org.openrdf.model.IRI){
+            return (org.openrdf.model.IRI)property;
         } else {
-            return createURI(property.stringValue());
+            return createIRI(property.stringValue());
         }
     }
     

@@ -26,7 +26,7 @@ import org.apache.stanbol.entityhub.servicesapi.model.Representation;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openrdf.model.Model;
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.TreeModel;
 import org.openrdf.model.impl.ValueFactoryImpl;
@@ -42,8 +42,8 @@ public class ResourceAdapterTest {
     @Test
     public void testDouble(){
         Model graph = new TreeModel();
-        URI id = vf.createURI("http://www.example.org/test");
-        URI doubleTestField = vf.createURI("http://www.example.org/field/double");
+        IRI id = vf.createIRI("http://www.example.org/test");
+        IRI doubleTestField = vf.createIRI("http://www.example.org/field/double");
         graph.add(id, doubleTestField, vf.createLiteral(Double.NaN));
         graph.add(id, doubleTestField, vf.createLiteral(Double.POSITIVE_INFINITY));
         graph.add(id, doubleTestField, vf.createLiteral(Double.NEGATIVE_INFINITY));
@@ -64,8 +64,8 @@ public class ResourceAdapterTest {
     @Test
     public void testFloat(){
         Model graph = new TreeModel();
-        URI id = vf.createURI("http://www.example.org/test");
-        URI floatTestField = vf.createURI("http://www.example.org/field/float");
+        IRI id = vf.createIRI("http://www.example.org/test");
+        IRI floatTestField = vf.createIRI("http://www.example.org/field/float");
         graph.add(id, floatTestField, vf.createLiteral(Float.NaN));
         graph.add(id, floatTestField, vf.createLiteral(Float.POSITIVE_INFINITY));
         graph.add(id, floatTestField, vf.createLiteral(Float.NEGATIVE_INFINITY));

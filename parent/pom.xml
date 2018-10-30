@@ -62,31 +62,31 @@
     <!-- commons lib versions -->
     <httpcomponents-version>4.4.1</httpcomponents-version>
     <jackson-version>1.9.13</jackson-version>
-    <jackson2-version>2.6.1</jackson2-version>
+    <jackson2-version>2.9.7</jackson2-version>
     <owlapi-version>5.1.7</owlapi-version>
 <!--     <owlapi-version>3.3</owlapi-version> -->
     
     <!-- sesame and marmotta versions -->
-    <sesame-version>2.7.13</sesame-version>
+    <sesame-version>4.1.2</sesame-version>
     <marmotta-version>3.4.0</marmotta-version>
     <ldpath-version>${marmotta-version}</ldpath-version>
-    <hazelcast.version>3.3.1</hazelcast.version>
+    <hazelcast.version>3.11</hazelcast.version>
     
-    <tika-version>1.5</tika-version>
+    <tika-version>1.19.1</tika-version>
     <solr-version>4.4.0</solr-version>
     
     <!-- jersey and hk2 version -->
-    <jersey-version>2.17</jersey-version>
-    <hk2-version>2.3.0</hk2-version>
+    <jersey-version>2.27</jersey-version>
+    <hk2-version>2.4.0</hk2-version>
     
     <!-- OSGi http service versions for jar launchers (see also STANBOL-1402) -->
-    <felix-http-version>2.3.2</felix-http-version>
-    <felix-jetty-version>3.0.2</felix-jetty-version>
-    <felix-servlet-api-version>1.1.0</felix-servlet-api-version>
+    <felix-http-version>3.0.0</felix-http-version>
+    <felix-jetty-version>4.0.6</felix-jetty-version>
+    <felix-servlet-api-version>1.1.2</felix-servlet-api-version>
 
     <!-- logging and test dep. versions -->
-    <slf4j-version>1.7.12</slf4j-version>
-    <pax-exam-version>2.3.0.M1</pax-exam-version>
+    <slf4j-version>1.7.25</slf4j-version>
+    <pax-exam-version>4.12.0</pax-exam-version>
 
     <sourceReleaseAssemblyDescriptor>stanbol-source-release-zip-tar</sourceReleaseAssemblyDescriptor>
   </properties>

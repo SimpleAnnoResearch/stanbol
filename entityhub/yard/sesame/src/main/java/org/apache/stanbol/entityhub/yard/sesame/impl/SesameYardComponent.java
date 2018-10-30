@@ -68,7 +68,7 @@ import java.util.List;
         @Property(name=Yard.DESCRIPTION),
         @Property(name=SesameYardComponent.REPOSITORY_ID),
         @Property(name=SesameYard.CONTEXT_ENABLED, boolValue=true),
-        @Property(name=SesameYard.CONTEXT_URI, cardinality=Integer.MAX_VALUE),
+        @Property(name=SesameYard.CONTEXT_IRI, cardinality=Integer.MAX_VALUE),
         @Property(name=SesameYard.INCLUDE_INFERRED, boolValue=true),
         @Property(name=AbstractYard.DEFAULT_QUERY_RESULT_NUMBER,intValue=-1),
         @Property(name=AbstractYard.MAX_QUERY_RESULT_NUMBER,

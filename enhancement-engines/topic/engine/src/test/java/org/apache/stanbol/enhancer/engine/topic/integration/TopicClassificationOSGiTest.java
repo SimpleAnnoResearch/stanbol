@@ -16,8 +16,6 @@
  */
 package org.apache.stanbol.enhancer.engine.topic.integration;
 
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.felix;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
@@ -85,7 +83,11 @@ public class TopicClassificationOSGiTest {
             // TODO: instead of deploying a previous version of the bundle built by maven, find a way to wrap
             // the engine class as a bundle directly in this test runtime.
             mavenBundle("org.apache.stanbol", "org.apache.stanbol.enhancer.engine.topic")
-                    .versionAsInProject(), junitBundles(), felix(), equinox());
+                    .versionAsInProject(),
+            junitBundles()
+//            felix(),
+//            equinox()
+            );
         // Note: the equinox tests can only be run if the test container is switched to the slower non-native,
         // implementation
     }

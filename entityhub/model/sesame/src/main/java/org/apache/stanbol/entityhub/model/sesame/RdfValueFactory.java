@@ -35,7 +35,7 @@ import org.apache.stanbol.entityhub.servicesapi.model.UnsupportedTypeException;
 import org.apache.stanbol.entityhub.servicesapi.model.ValueFactory;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Model;
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 import org.openrdf.model.impl.TreeModel;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.vocabulary.XMLSchema;
@@ -46,29 +46,29 @@ public class RdfValueFactory implements ValueFactory{
     
     protected final Logger log = LoggerFactory.getLogger(RdfValueFactory.class);
     
-    static final Map<Object, Set<URI>> JAVA_TO_XML_DATATYPE_MAPPINGS;
+    static final Map<Object, Set<IRI>> JAVA_TO_XML_DATATYPE_MAPPINGS;
     static {
-        Map<Object, Set<URI>> mappings = new HashMap<Object,Set<URI>>();
+        Map<Object, Set<IRI>> mappings = new HashMap<Object,Set<IRI>>();
         
         mappings.put(Boolean.class, Collections.singleton(XMLSchema.BOOLEAN));
         
         mappings.put(Byte.class, Collections.singleton(XMLSchema.BYTE));
-        mappings.put(Short.class, new HashSet<URI>(Arrays.asList(
+        mappings.put(Short.class, new HashSet<IRI>(Arrays.asList(
             XMLSchema.SHORT, XMLSchema.UNSIGNED_BYTE)));
-        mappings.put(Integer.class, new HashSet<URI>(Arrays.asList(
+        mappings.put(Integer.class, new HashSet<IRI>(Arrays.asList(
             XMLSchema.INT, XMLSchema.UNSIGNED_SHORT)));
-        mappings.put(Long.class, new HashSet<URI>(Arrays.asList(
+        mappings.put(Long.class, new HashSet<IRI>(Arrays.asList(
             XMLSchema.LONG, XMLSchema.UNSIGNED_INT, 
             XMLSchema.NEGATIVE_INTEGER, XMLSchema.POSITIVE_INTEGER,
             XMLSchema.NON_NEGATIVE_INTEGER, XMLSchema.NON_POSITIVE_INTEGER)));
-        mappings.put(BigDecimal.class, new HashSet<URI>(Arrays.asList(
+        mappings.put(BigDecimal.class, new HashSet<IRI>(Arrays.asList(
             XMLSchema.INTEGER, XMLSchema.UNSIGNED_LONG)));
 
         mappings.put(Float.class, Collections.singleton(XMLSchema.FLOAT));
         mappings.put(Double.class, Collections.singleton(XMLSchema.DOUBLE));
         mappings.put(BigDecimal.class, Collections.singleton(XMLSchema.DECIMAL));
         
-        mappings.put(Date.class, new HashSet<URI>(Arrays.asList(
+        mappings.put(Date.class, new HashSet<IRI>(Arrays.asList(
             XMLSchema.DATE, XMLSchema.DATETIME, XMLSchema.TIME, 
             XMLSchema.GYEARMONTH, XMLSchema.GMONTHDAY, XMLSchema.GYEAR,
             XMLSchema.GMONTH, XMLSchema.GDAY)));
@@ -135,10 +135,10 @@ public class RdfValueFactory implements ValueFactory{
     public Reference createReference(Object value) throws UnsupportedTypeException, IllegalArgumentException {
         if (value == null) {
             throw new IllegalArgumentException("The parsed value MUST NOT be NULL");
-        } else if (value instanceof URI) {
-            return new RdfReference((URI)value);
+        } else if (value instanceof IRI) {
+            return new RdfReference((IRI)value);
         } else {
-            return new RdfReference(sesameFactory.createURI(value.toString()));
+            return new RdfReference(sesameFactory.createIRI(value.toString()));
         }
     }
 
@@ -150,15 +150,15 @@ public class RdfValueFactory implements ValueFactory{
              throw new IllegalArgumentException("The parsed id MUST NOT be empty!");
          } else {
              //use the set model if present
-             return createRdfRepresentation(sesameFactory.createURI(id));
+             return createRdfRepresentation(sesameFactory.createIRI(id));
         }
     }
     /**
-     * Creates a {@link RdfRepresentation} for the parsed {@link URI}
-     * @param subject the URI
+     * Creates a {@link RdfRepresentation} for the parsed {@link IRI}
+     * @param subject the IRI
      * @return the {@link RdfRepresentation}
      */
-    public RdfRepresentation createRdfRepresentation(URI subject) {
+    public RdfRepresentation createRdfRepresentation(IRI subject) {
         Model model = this.model == null ? new TreeModel() : this.model;
         return new RdfRepresentation(subject, model, this);
     }
@@ -207,7 +207,7 @@ public class RdfValueFactory implements ValueFactory{
         } else if(representation != null){
             //create the Clerezza Represenation
             RdfRepresentation rdfRep = createRdfRepresentation(
-                sesameFactory.createURI(representation.getId()));
+                sesameFactory.createIRI(representation.getId()));
             //Copy all values field by field
             for (Iterator<String> fields = representation.getFieldNames(); fields.hasNext();) {
                 String field = fields.next();

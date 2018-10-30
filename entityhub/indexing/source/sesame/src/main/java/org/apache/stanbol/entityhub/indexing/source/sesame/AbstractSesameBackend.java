@@ -19,8 +19,6 @@ package org.apache.stanbol.entityhub.indexing.source.sesame;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -32,11 +30,13 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.marmotta.ldpath.api.backend.RDFBackend;
 import org.openrdf.model.BNode;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
@@ -56,8 +56,8 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractSesameBackend.class);
         
-    protected org.openrdf.model.URI createURIInternal(final ValueFactory valueFactory, String uri) {
-        return valueFactory.createURI(uri);
+    protected org.openrdf.model.IRI createIRIInternal(final ValueFactory valueFactory, String uri) {
+        return valueFactory.createIRI(uri);
     }
 
     protected Literal createLiteralInternal(final ValueFactory valueFactory, String content) {
@@ -66,7 +66,7 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
     }
 
     protected Literal createLiteralInternal(final ValueFactory valueFactory, String content,
-            Locale language, URI type) {
+            Locale language, org.openrdf.model.IRI type) {
         if(log.isDebugEnabled()){
             log.debug("creating literal with content \"{}\", language {}, datatype {}",
                 new Object[]{content,language,type});
@@ -76,12 +76,12 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
         } else if(type == null) {
             return valueFactory.createLiteral(content,language.getLanguage());
         } else  {
-            return valueFactory.createLiteral(content, valueFactory.createURI(type.toString()));
+            return valueFactory.createLiteral(content, valueFactory.createIRI(type.toString()));
         }
     }
 
     protected Collection<Value> listObjectsInternal(RepositoryConnection connection, 
-        Resource subject, org.openrdf.model.URI property, boolean includeInferred, 
+        Resource subject, org.openrdf.model.IRI property, boolean includeInferred, 
         Resource...context)
             throws RepositoryException {
         ValueFactory valueFactory = connection.getValueFactory();
@@ -102,7 +102,7 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
     }
 
     protected Collection<Value> listSubjectsInternal(final RepositoryConnection connection, 
-        org.openrdf.model.URI property, Value object, boolean includeInferred, 
+        org.openrdf.model.IRI property, Value object, boolean includeInferred, 
         Resource...context)
             throws RepositoryException {
         Set<Value> result = new HashSet<Value>();
@@ -128,8 +128,8 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
      * @return
      */
     protected <T extends Value> T merge(T value, ValueFactory vf) {
-        if(value instanceof org.openrdf.model.URI) {
-            return (T)vf.createURI(value.stringValue());
+        if(value instanceof org.openrdf.model.IRI) {
+            return (T)vf.createIRI(value.stringValue());
         } else if(value instanceof BNode) {
             return (T)vf.createBNode(((BNode) value).getID());
         } else {
@@ -141,10 +141,10 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
     public abstract Literal createLiteral(String content);
 
     @Override
-    public abstract Literal createLiteral(String content, Locale language, URI type);
+    public abstract Literal createLiteral(String content, Locale language, IRI type);
 
     @Override
-    public abstract org.openrdf.model.URI createURI(String uri);
+    public abstract IRI createIRI(String uri);
 
     @Override
     public abstract Collection<Value> listObjects(Value subject, Value property);
@@ -175,14 +175,14 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
     }
 
     /**
-     * Test whether the node passed as argument is a URI
+     * Test whether the node passed as argument is a IRI
      *
      * @param n the node to check
-     * @return true if the node is a URI
+     * @return true if the node is a IRI
      */
     @Override
-    public boolean isURI(Value n) {
-        return n instanceof org.openrdf.model.URI;
+    public boolean isIRI(Value n) {
+        return n instanceof org.openrdf.model.IRI;
     }
 
     /**
@@ -206,8 +206,8 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
     @Override
     public Locale getLiteralLanguage(Value n) {
         try {
-            if(((Literal)n).getLanguage() != null) {
-                return new Locale( ((Literal)n).getLanguage() );
+            if(((Literal)n).getLanguage().isPresent()) {
+                return new Locale( ((Literal)n).getLanguage().get() );
             } else {
                 return null;
             }
@@ -218,20 +218,20 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
     }
 
     /**
-     * Return the URI of the type of the literal node passed as argument.
+     * Return the IRI of the type of the literal node passed as argument.
      *
      * @param n the literal node for which to return the typer
-     * @return a URI representing the type of the literal content, or null if the literal is untyped
+     * @return a IRI representing the type of the literal content, or null if the literal is untyped
      * @throws IllegalArgumentException in case the node is no literal
      */
     @Override
-    public URI getLiteralType(Value n) {
+    public IRI getLiteralType(Value n) {
         try {
             if(((Literal)n).getDatatype() != null) {
                 try {
-                    return new URI(((Literal)n).getDatatype().stringValue());
-                } catch (URISyntaxException e) {
-                    log.error("literal datatype was not a valid URI: {}",((Literal) n).getDatatype());
+                	return SimpleValueFactory.getInstance().createIRI(((Literal)n).getDatatype().stringValue());
+                } catch (Exception e) {
+                    log.error("literal datatype was not a valid IRI: {}",((Literal) n).getDatatype());
                     return null;
                 }
             } else {
@@ -244,8 +244,8 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
     }
 
     /**
-     * Return the string value of a node. For a literal, this will be the content, for a URI node it will be the
-     * URI itself, and for a blank node it will be the identifier of the node.
+     * Return the string value of a node. For a literal, this will be the content, for a IRI node it will be the
+     * IRI itself, and for a blank node it will be the identifier of the node.
      *
      * @param value
      * @return
@@ -357,14 +357,14 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
 
 
     /**
-     * Prints the type (URI,bNode,literal) by inspecting the parsed {@link Value}
+     * Prints the type (IRI,bNode,literal) by inspecting the parsed {@link Value}
      * to improve error messages and other loggings. In case of literals 
      * also the {@link #getLiteralType(Value) literal type} is printed
      * @param value the value or <code>null</code> 
      * @return the type as string.
      */
     protected String debugType(Value value) {
-        return value == null ? "null":isURI(value)?"URI":isBlank(value)?"bNode":
+        return value == null ? "null":isIRI(value)?"IRI":isBlank(value)?"bNode":
                 "literal ("+getLiteralType(value)+")";
     }
 

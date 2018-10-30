@@ -39,7 +39,7 @@ import org.apache.stanbol.entityhub.yard.sesame.SesameYardConfig;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
@@ -59,14 +59,14 @@ public class SesameContextTest {
     private static ValueFactory sesameFactory = repo.getValueFactory();
     private static String EN = "en";
     private static String DE = "de";
-    private static final Map<URI,List<? extends Yard>> expectedEntities = new HashMap<URI,List<? extends Yard>>();
+    private static final Map<IRI,List<? extends Yard>> expectedEntities = new HashMap<IRI,List<? extends Yard>>();
     
-    private static URI rdfType = sesameFactory.createURI(NamespaceEnum.rdf+"type");
-    private static URI skosConcept = sesameFactory.createURI(NamespaceEnum.skos+"Concept");
-    private static URI skosPrefLabel = sesameFactory.createURI(NamespaceEnum.skos+"preLabel");
+    private static IRI rdfType = sesameFactory.createIRI(NamespaceEnum.rdf+"type");
+    private static IRI skosConcept = sesameFactory.createIRI(NamespaceEnum.skos+"Concept");
+    private static IRI skosPrefLabel = sesameFactory.createIRI(NamespaceEnum.skos+"preLabel");
 
-    private static URI CONTEXT1 = sesameFactory.createURI("http://www.test.org/contex1");
-    private static URI CONTEXT2 = sesameFactory.createURI("http://www.test.org/contex2");
+    private static IRI CONTEXT1 = sesameFactory.createIRI("http://www.test.org/contex1");
+    private static IRI CONTEXT2 = sesameFactory.createIRI("http://www.test.org/contex2");
     
     private static SesameYard yard1;
     private static SesameYard yard2;
@@ -100,13 +100,13 @@ public class SesameContextTest {
         //add the test data (to the Repository to also test pre-existing data)
         RepositoryConnection con = repo.getConnection();
         con.begin();
-        URI entity1 = sesameFactory.createURI("http://www.test.org/entity1");
+        IRI entity1 = sesameFactory.createIRI("http://www.test.org/entity1");
         con.add(entity1,rdfType,skosConcept,CONTEXT1);
         con.add(entity1,skosPrefLabel,sesameFactory.createLiteral("test context one", EN),CONTEXT1);
         con.add(entity1,skosPrefLabel,sesameFactory.createLiteral("Test Context Eins", DE),CONTEXT1);
         expectedEntities.put(entity1, Arrays.asList(yard1,unionYard));
         
-        URI entity2 = sesameFactory.createURI("http://www.test.org/entity2");
+        IRI entity2 = sesameFactory.createIRI("http://www.test.org/entity2");
         con.add(entity2,rdfType,skosConcept,CONTEXT2);
         con.add(entity2,skosPrefLabel,sesameFactory.createLiteral("test context two", EN),CONTEXT2);
         con.add(entity2,skosPrefLabel,sesameFactory.createLiteral("Test Context Zwei", DE),CONTEXT2);
@@ -120,7 +120,7 @@ public class SesameContextTest {
      */
     @Test
     public void testRetrival() throws YardException{
-        for(Entry<URI,List<? extends Yard>> entry : expectedEntities.entrySet()){
+        for(Entry<IRI,List<? extends Yard>> entry : expectedEntities.entrySet()){
             for(Yard yard : yards){
                 if(entry.getValue().contains(yard)){
                     validateEntity(yard, entry.getKey());
@@ -160,10 +160,10 @@ public class SesameContextTest {
     /**
      * Used by {@link #testRetrival()} to validate that an Entity is correctly
      * retrieved by the tested {@link SesameYard}s.
-     * @param entity key - URI; value - expected RDF data
+     * @param entity key - IRI; value - expected RDF data
      * @throws YardException 
      */
-    private void validateEntity(Yard yard, URI subject) throws YardException {
+    private void validateEntity(Yard yard, IRI subject) throws YardException {
         Representation rep = yard.getRepresentation(subject.stringValue());
         assertNotNull("The Representation for "+subject
             + "is missing in the "+yard.getId(), rep);

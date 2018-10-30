@@ -24,7 +24,7 @@ import org.apache.stanbol.entityhub.servicesapi.model.Representation;
 import org.apache.stanbol.entityhub.servicesapi.model.Text;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Value;
 import org.openrdf.model.datatypes.XMLDatatypeUtil;
 import org.openrdf.model.vocabulary.XMLSchema;
@@ -71,8 +71,8 @@ public final class ModelUtils {
         public Object transform(Object input) {
             if(input instanceof Value){
                 Value sesameValue = (Value) input;
-                if(sesameValue instanceof URI){
-                    return new RdfReference((URI)sesameValue);
+                if(sesameValue instanceof IRI){
+                    return new RdfReference((IRI)sesameValue);
                 } else if(sesameValue instanceof Literal){
                     Literal literal = (Literal)sesameValue;
                     if(literal.getDatatype() == null){ //TODO: adapt to RDF1.1
@@ -105,7 +105,7 @@ public final class ModelUtils {
      * @return
      */
     private static Object transformTypedLiteral(Literal literal){
-        URI dataType = literal.getDatatype();
+        IRI dataType = literal.getDatatype();
         if(XMLSchema.INT.equals(dataType)){
             return literal.intValue();
         } else if(XMLSchema.LONG.equals(dataType)){

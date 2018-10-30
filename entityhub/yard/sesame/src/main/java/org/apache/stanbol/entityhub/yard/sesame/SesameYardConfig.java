@@ -70,18 +70,18 @@ public class SesameYardConfig extends YardConfig {
      */
     public void setContexts(String[] contexts){
         if(contexts == null){
-            config.remove(SesameYard.CONTEXT_URI);
+            config.remove(SesameYard.CONTEXT_IRI);
         } else {
-            config.put(SesameYard.CONTEXT_URI, contexts);
+            config.put(SesameYard.CONTEXT_IRI, contexts);
         }
     }
     
     /**
-     * Getter for the {@link SesameYard#CONTEXT_URI} property.
+     * Getter for the {@link SesameYard#CONTEXT_IRI} property.
      * @return the contexts or an empty array if none
      */
     public String[] getContexts(){
-        Object value = config.get(SesameYard.CONTEXT_URI);
+        Object value = config.get(SesameYard.CONTEXT_IRI);
         Set<String> values = null;
         if(value instanceof String){
             String str = ((String)value).trim();
@@ -106,7 +106,7 @@ public class SesameYardConfig extends YardConfig {
             }
         } else {
             log.warn("Illegal '{}' value '{}' (type: '{}')! Supported: String, String[] and Iterables",
-                new Object[]{SesameYard.CONTEXT_URI, value, value.getClass()});
+                new Object[]{SesameYard.CONTEXT_IRI, value, value.getClass()});
             log.warn("   ... return empty context array as fallback!");
             return new String[]{};
         }
@@ -142,12 +142,12 @@ public class SesameYardConfig extends YardConfig {
     
     @Override
     protected void validateConfig() throws ConfigurationException {
-        Object value = config.get(SesameYard.CONTEXT_URI);
+        Object value = config.get(SesameYard.CONTEXT_IRI);
         if(!(value == null || value instanceof String || value instanceof String[]
                 || value instanceof Iterable<?>)){
-            throw new ConfigurationException(SesameYard.CONTEXT_URI, String.format(
+            throw new ConfigurationException(SesameYard.CONTEXT_IRI, String.format(
                 "Illegal '%s' value '%s' (type: '%s')! Supported: String, String[] and Iterables",
-                SesameYard.CONTEXT_URI, value, value.getClass()));
+                SesameYard.CONTEXT_IRI, value, value.getClass()));
         }
     }
 

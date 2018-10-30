@@ -42,10 +42,11 @@ import org.apache.stanbol.entityhub.servicesapi.query.UnsupportedQueryTypeExcept
 import org.apache.stanbol.entityhub.servicesapi.yard.Yard;
 import org.apache.stanbol.entityhub.servicesapi.yard.YardException;
 import org.openrdf.model.BNode;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Model;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.TreeModel;
@@ -99,12 +100,12 @@ public class SesameYard extends AbstractYard implements Yard {
      * <code> ?representationId <{@value #MANAGED_REPRESENTATION}> true^^xsd:boolean </code>
      * <br> for any empty Representation avoids this unwanted behaviour.
      */
-    private static final String MANAGED_REPRESENTATION_URI = "urn:org.apache.stanbol:entityhub.yard:rdf.sesame:managesRepresentation";
+    private static final String MANAGED_REPRESENTATION_IRI = "urn:org.apache.stanbol:entityhub.yard:rdf.sesame:managesRepresentation";
     /**
      * used as property for a triple to ensure existence for representations that 
      * do not define yet any triples
      */
-    private final URI managedRepresentation;
+    private final IRI managedRepresentation;
     /**
      * used as value for a triple to ensure existence for representations that 
      * do not define yet any triples
@@ -120,9 +121,9 @@ public class SesameYard extends AbstractYard implements Yard {
     public static final boolean DEFAULT_INCLUDE_INFERRED = true;
     /**
      * Property used to enable/disable Sesame Context. If <code>false</code> the
-     * {@link #CONTEXT_URI} property gets ignored. If <code>true</code> and
-     * {@link #CONTEXT_URI} is missing the default context (<code>null</code>) is
-     * used. Otherwise the contexts as configured for {@link #CONTEXT_URI} are
+     * {@link #CONTEXT_IRI} property gets ignored. If <code>true</code> and
+     * {@link #CONTEXT_IRI} is missing the default context (<code>null</code>) is
+     * used. Otherwise the contexts as configured for {@link #CONTEXT_IRI} are
      * used.
      */
     public static final String CONTEXT_ENABLED = "org.apache.stanbol.entityhub.yard.sesame.enableContext";
@@ -132,16 +133,16 @@ public class SesameYard extends AbstractYard implements Yard {
     public static final boolean DEFAULT_CONTEXT_ENABLED = false;
     
     /**
-     * Property used to optionally configure one or more context URIs. empty
+     * Property used to optionally configure one or more context IRIs. empty
      * values are interpreted as <code>null</code>
      */
-    public static final String CONTEXT_URI = "org.apache.stanbol.entityhub.yard.sesame.contextUri";
+    public static final String CONTEXT_IRI = "org.apache.stanbol.entityhub.yard.sesame.contextUri";
 
     /**
      * The context used by this yard. Parsed from {@link SesameYardConfig#getContexts()}
      * if <code>{@link SesameYardConfig#isContextEnabled()} == true</code>
      */
-    private final URI[] contexts;
+    private final IRI[] contexts;
     /**
      * The {@link Dataset} similar to {@link #contexts}. Dataset is used for
      * SPARQL queries to enforce results to be restricted to the {@link #contexts}
@@ -167,13 +168,13 @@ public class SesameYard extends AbstractYard implements Yard {
     private final ValueFactory sesameFactory;
     
     /**
-     * The {@link URI} for {@link RdfResourceEnum#QueryResultSet}
+     * The {@link IRI} for {@link RdfResourceEnum#QueryResultSet}
      */
-    private final URI queryRoot;
+    private final IRI queryRoot;
     /**
-     * The {@link URI} for {@link RdfResourceEnum#queryResult}
+     * The {@link IRI} for {@link RdfResourceEnum#queryResult}
      */
-    private final URI queryResult;
+    private final IRI queryResult;
     /**
      * Constructs a SesameYard for the parsed Repository and configuration.
      * @param repo The Repository used by this Yard. The parsed Repository is
@@ -194,7 +195,7 @@ public class SesameYard extends AbstractYard implements Yard {
         }
         this.sesameFactory = repo.getValueFactory();
         this.valueFactory = new RdfValueFactory(null, sesameFactory);
-        this.managedRepresentation = sesameFactory.createURI(MANAGED_REPRESENTATION_URI);
+        this.managedRepresentation = sesameFactory.createIRI(MANAGED_REPRESENTATION_IRI);
         this.managedRepresentationState = sesameFactory.createLiteral(true);
         this.includeInferred = config.isIncludeInferred();
         //init the super class
@@ -202,18 +203,18 @@ public class SesameYard extends AbstractYard implements Yard {
         if(config.isContextEnabled()){
             //Set the contexts
             String[] contexts = config.getContexts();
-            this.contexts = new URI[contexts.length];
+            this.contexts = new IRI[contexts.length];
             for(int i = 0; i < contexts.length; i++){
                 this.contexts[i] = contexts[i] == null ? null : 
-                    sesameFactory.createURI(contexts[i]);
+                    sesameFactory.createIRI(contexts[i]);
             }
         } else {
-            this.contexts = new URI[]{};
+            this.contexts = new IRI[]{};
         }
         //also init the dataset required for SPARQL queries
         if(contexts.length > 0){
             DatasetImpl dataset = new DatasetImpl();
-            for(URI context : this.contexts){
+            for(IRI context : this.contexts){
                 dataset.addNamedGraph(context);
                 dataset.addDefaultGraph(context);
             }
@@ -221,8 +222,8 @@ public class SesameYard extends AbstractYard implements Yard {
         } else {
             this.dataset = null;
         }
-        queryRoot = sesameFactory.createURI(RdfResourceEnum.QueryResultSet.getUri());
-        queryResult = sesameFactory.createURI(RdfResourceEnum.queryResult.getUri());
+        queryRoot = sesameFactory.createIRI(RdfResourceEnum.QueryResultSet.getUri());
+        queryResult = sesameFactory.createIRI(RdfResourceEnum.queryResult.getUri());
     }
     
     /**
@@ -234,11 +235,11 @@ public class SesameYard extends AbstractYard implements Yard {
     }
     
     /**
-     * Getter for the context URI used by this yard.
-     * @return the URI used for the RDF graph that stores all the data of this
+     * Getter for the context IRI used by this yard.
+     * @return the IRI used for the RDF graph that stores all the data of this
      * yard.
      */
-    public final URI[] getContexts(){
+    public final IRI[] getContexts(){
         return contexts;
     }
 
@@ -254,7 +255,7 @@ public class SesameYard extends AbstractYard implements Yard {
         try {
             con = repository.getConnection();
             con.begin();
-            Representation rep = getRepresentation(con, sesameFactory.createURI(id), true);
+            Representation rep = getRepresentation(con, sesameFactory.createIRI(id), true);
             con.commit();
             return rep;
         } catch (RepositoryException e) {
@@ -268,15 +269,15 @@ public class SesameYard extends AbstractYard implements Yard {
         }
     }
     /**
-     * Internally used to create Representations for URIs
-     * @param uri the uri
-     * @param check if <code>false</code> than there is no check if the URI
+     * Internally used to create Representations for IRIs
+     * @param iri the iri
+     * @param check if <code>false</code> than there is no check if the IRI
      *     refers to a Resource in the graph that is of type {@link #REPRESENTATION}
      * @return the Representation
      */
-    protected final Representation getRepresentation(RepositoryConnection con, URI uri, boolean check) throws RepositoryException {
-        if(!check || isRepresentation(con,uri)){
-            return createRepresentationGraph(con, valueFactory, uri);
+    protected final Representation getRepresentation(RepositoryConnection con, IRI iri, boolean check) throws RepositoryException {
+        if(!check || isRepresentation(con,iri)){
+            return createRepresentationGraph(con, valueFactory, iri);
         } else {
             return null; //not found
         }
@@ -287,14 +288,14 @@ public class SesameYard extends AbstractYard implements Yard {
      * parsed id from the Sesame repository.
      * @param con the repository connection
      * @param valueFactory the {@link RdfValueFactory} to use
-     * @param uri the subject of the Representation to extract
+     * @param iri the subject of the Representation to extract
      * @return the representation with the extracted data.
      * @throws RepositoryException 
      */
-    protected RdfRepresentation createRepresentationGraph(RepositoryConnection con, RdfValueFactory valueFactory, URI uri) throws RepositoryException{
-        RdfRepresentation rep = valueFactory.createRdfRepresentation(uri);
+    protected RdfRepresentation createRepresentationGraph(RepositoryConnection con, RdfValueFactory valueFactory, IRI iri) throws RepositoryException{
+        RdfRepresentation rep = valueFactory.createRdfRepresentation(iri);
         Model model = rep.getModel();
-        extractRepresentation(con, model, uri, new HashSet<BNode>());
+        extractRepresentation(con, model, iri, new HashSet<BNode>());
         return rep;
     }
     /**
@@ -342,7 +343,7 @@ public class SesameYard extends AbstractYard implements Yard {
         try {
             con = repository.getConnection();
             con.begin();
-            boolean state = isRepresentation(con, sesameFactory.createURI(id));
+            boolean state = isRepresentation(con, sesameFactory.createIRI(id));
             con.commit();
             return state;
         } catch (RepositoryException e) {
@@ -356,13 +357,13 @@ public class SesameYard extends AbstractYard implements Yard {
         }
     }
     /**
-     * Internally used to check if a URI resource represents an representation
+     * Internally used to check if a IRI resource represents an representation
      * @param con the repository connection
-     * @param subject the subject URI of the representation to check
+     * @param subject the subject IRI of the representation to check
      * @return the state
      * @throws RepositoryException 
      */
-    protected final boolean isRepresentation(RepositoryConnection con , URI subject) throws RepositoryException{
+    protected final boolean isRepresentation(RepositoryConnection con , IRI subject) throws RepositoryException{
         return con.hasStatement(subject, null, null, includeInferred, contexts);
     }
 
@@ -375,7 +376,7 @@ public class SesameYard extends AbstractYard implements Yard {
         try {
             con = repository.getConnection();
             con.begin();
-            remove(con, sesameFactory.createURI(id));
+            remove(con, sesameFactory.createIRI(id));
             con.commit();
         } catch (RepositoryException e) {
             throw new YardException("Unable to remove for Representation "+id, e);
@@ -395,7 +396,7 @@ public class SesameYard extends AbstractYard implements Yard {
      * @param subject the subject of the Representation to remove
      * @throws RepositoryException 
      */
-    protected void remove(RepositoryConnection con, URI subject) throws RepositoryException{
+    protected void remove(RepositoryConnection con, IRI subject) throws RepositoryException{
         con.remove(subject, null, null, contexts);
     }
     
@@ -410,7 +411,7 @@ public class SesameYard extends AbstractYard implements Yard {
             con.begin();
             for(String id : ids){
                 if(id != null){
-                    remove(con, sesameFactory.createURI(id));
+                    remove(con, sesameFactory.createIRI(id));
                 }
             }
             con.commit();
@@ -548,7 +549,7 @@ public class SesameYard extends AbstractYard implements Yard {
             return null;
         }
         log.debug("store Representation " + representation.getId());
-        URI subject = sesameFactory.createURI(representation.getId());
+        IRI subject = sesameFactory.createIRI(representation.getId());
         boolean contains = con.hasStatement(subject, null, null, includeInferred, contexts);
         con.remove(subject, null, null, contexts);
         if(!contains && !allowCreate){
@@ -561,7 +562,7 @@ public class SesameYard extends AbstractYard implements Yard {
         //get the graph for the Representation and add it to the store
         RdfRepresentation toAdd = valueFactory.toRdfRepresentation(representation);
         if(toAdd.getModel().isEmpty()){
-            con.add(toAdd.getURI(),managedRepresentation,managedRepresentationState, contexts);
+            con.add(toAdd.getIRI(),managedRepresentation,managedRepresentationState, contexts);
         } else {
             con.add(toAdd.getModel(), contexts);
         }
@@ -677,12 +678,12 @@ public class SesameYard extends AbstractYard implements Yard {
             while(results.hasNext()){
                 BindingSet result = results.next();
                 Value value = result.getValue(query.getRootVariableName());
-                if(value instanceof URI){
+                if(value instanceof IRI){
                     //copy all data to the model and create the representation
-                    RdfRepresentation rep = createRepresentationGraph(con, valueFactory, (URI)value); 
+                    RdfRepresentation rep = createRepresentationGraph(con, valueFactory, (IRI)value); 
                     model.add(queryRoot, queryResult, value); //link the result with the query result
                     representations.add(rep);
-                } //ignore non URI results
+                } //ignore non IRI results
             }
             con.commit();
             return new SesameQueryResultList(model, query, representations);
@@ -725,27 +726,27 @@ public class SesameYard extends AbstractYard implements Yard {
             RdfValueFactory valueFactory = new RdfValueFactory(model, sesameFactory);
             List<Representation> representations = limit > 0 ? new ArrayList<Representation>(limit)
                     : new ArrayList<Representation>();
-            Map<String,URI> bindings = new HashMap<String,URI>(query.getFieldVariableMappings().size());
+            Map<String,IRI> bindings = new HashMap<String,IRI>(query.getFieldVariableMappings().size());
             for(Entry<String,String> mapping : query.getFieldVariableMappings().entrySet()){
-                bindings.put(mapping.getValue(), sesameFactory.createURI(mapping.getKey()));
+                bindings.put(mapping.getValue(), sesameFactory.createIRI(mapping.getKey()));
             }
             while(results.hasNext()){
                 BindingSet result = results.next();
                 Value value = result.getValue(query.getRootVariableName());
-                if(value instanceof URI){
-                    URI subject = (URI) value;
+                if(value instanceof IRI){
+                    IRI subject = (IRI) value;
                     //link the result with the query result
                     model.add(queryRoot, queryResult, subject);
                     //now copy over the other selected data
                     for(String binding : result.getBindingNames()){
-                        URI property = bindings.get(binding);
+                        IRI property = bindings.get(binding);
                         if(property != null){
                             model.add(subject, property, result.getValue(binding));
                         } //else no mapping for the query.getRootVariableName()
                     }
                     //create a representation and add it to the results
                     representations.add(valueFactory.createRdfRepresentation(subject));
-                } //ignore non URI results
+                } //ignore non IRI results
             }
             con.commit();
             return new SesameQueryResultList(model, query, representations);

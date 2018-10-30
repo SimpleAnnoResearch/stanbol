@@ -43,7 +43,7 @@ import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Value;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.slf4j.Logger;
@@ -57,7 +57,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
 
     private Logger log = LoggerFactory.getLogger(RdfRepresentation.class);
     
-    private URI subject;
+    private IRI subject;
     private final Model model;
     private final RdfValueFactory factory;
     private final org.openrdf.model.ValueFactory sesameFactory;
@@ -80,7 +80,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
      * @param model the model
      * @param factory the factory
      */
-    protected RdfRepresentation(URI subject, Model model, RdfValueFactory factory){
+    protected RdfRepresentation(IRI subject, Model model, RdfValueFactory factory){
         this.subject = subject;
         this.model = model;
         this.factory = factory;
@@ -97,7 +97,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
         if(value == null){
             throw new IllegalArgumentException("NULL values are not supported by Representations");
         }
-        URI property = sesameFactory.createURI(field);
+        IRI property = sesameFactory.createIRI(field);
         Collection<Object> values = new ArrayList<Object>();
         //process the parsed value with the Utility Method ->
         // this converts Objects as defined in the specification
@@ -110,7 +110,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
                 //for Sesame RDF wrapper we can directly use the Value
                 addValue(property,  ((RdfWrapper) current).getValue());
             } else if (current instanceof Reference){
-                addValue(property, sesameFactory.createURI(((Reference) current).getReference()));
+                addValue(property, sesameFactory.createIRI(((Reference) current).getReference()));
             } else if (current instanceof Text){
                 addValue(property, sesameFactory.createLiteral(
                     ((Text)current).getText(), ((Text)current).getLanguage()));
@@ -185,7 +185,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
         if(text == null){
             throw new IllegalArgumentException("NULL values are not supported by Representations");
         }
-        URI property = sesameFactory.createURI(field);
+        IRI property = sesameFactory.createIRI(field);
         if(languages == null || languages.length == 0){
             languages = new String []{null};
         }
@@ -207,7 +207,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
         } else if (reference.isEmpty()) {
             throw new IllegalArgumentException("References MUST NOT be empty!");
         }
-        addValue(sesameFactory.createURI(field), sesameFactory.createURI(reference));
+        addValue(sesameFactory.createIRI(field), sesameFactory.createIRI(reference));
     }
     /**
      * Adds a value to a property and handles a possible 
@@ -217,7 +217,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
      * @throws IllegalStateException in case of a {@link RepositoryException}
      * while adding the value.
      */
-    private void addValue(URI property, Value value) {
+    private void addValue(IRI property, Value value) {
         model.add(subject, property, value);
     }
 
@@ -229,7 +229,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
         } else if(field.isEmpty()){
             throw new IllegalArgumentException("The parsed field MUST NOT be Empty");
         }
-        URI property = sesameFactory.createURI(field);
+        IRI property = sesameFactory.createIRI(field);
         return IteratorUtils.transformedIterator(
             IteratorUtils.filteredIterator(
                 IteratorUtils.transformedIterator(
@@ -247,7 +247,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
         } else if(field.isEmpty()){
             throw new IllegalArgumentException("The parsed field MUST NOT be Empty");
         }
-        URI property = sesameFactory.createURI(field);
+        IRI property = sesameFactory.createIRI(field);
         //filter for values that are compatible with the parsed type
         Iterator<?> iterator = IteratorUtils.filteredIterator(
             IteratorUtils.transformedIterator(
@@ -272,7 +272,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
         } else if(field.isEmpty()){
             throw new IllegalArgumentException("The parsed field MUST NOT be Empty");
         }
-        URI property = sesameFactory.createURI(field);
+        IRI property = sesameFactory.createIRI(field);
         return IteratorUtils.transformedIterator(
             IteratorUtils.transformedIterator(
                 IteratorUtils.filteredIterator(
@@ -365,7 +365,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
         } else if(field.isEmpty()){
             throw new IllegalArgumentException("The parsed field MUST NOT be Empty");
         }
-        URI property = sesameFactory.createURI(field);
+        IRI property = sesameFactory.createIRI(field);
         return IteratorUtils.transformedIterator(
             IteratorUtils.filteredIterator(
                 IteratorUtils.transformedIterator(
@@ -383,7 +383,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
         } else if(field.isEmpty()){
             throw new IllegalArgumentException("The parsed field MUST NOT be Empty");
         }
-        URI property = sesameFactory.createURI(field);
+        IRI property = sesameFactory.createIRI(field);
         return IteratorUtils.transformedIterator(
             IteratorUtils.transformedIterator(
                 IteratorUtils.filteredIterator(
@@ -407,7 +407,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
                     +" and field "+field+" -> call ignored");
             return;
         }
-        URI property = sesameFactory.createURI(field);
+        IRI property = sesameFactory.createIRI(field);
         
         Collection<Object> values = new ArrayList<Object>();
         ModelUtils.checkValues(factory, parsedValue, values);
@@ -418,7 +418,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
                 //for Sesame RDF wrapper we can directly use the Value
                 removeValue(property,  ((RdfWrapper) value).getValue());
             } else if (value instanceof Reference){
-                removeValue(property, sesameFactory.createURI(((Reference) value).getReference()));
+                removeValue(property, sesameFactory.createIRI(((Reference) value).getReference()));
             } else if (value instanceof Text){
                 removeValue(property, sesameFactory.createLiteral(
                     ((Text)value).getText(), ((Text)value).getLanguage()));
@@ -432,7 +432,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
      * @param property
      * @param value
      */
-    private boolean removeValue(URI property, Value value){
+    private boolean removeValue(IRI property, Value value){
         if(value != null){
             return model.remove(subject, property, value);
         } else {
@@ -447,7 +447,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
         } else if(field.isEmpty()){
             throw new IllegalArgumentException("The parsed field MUST NOT be Empty");
         }
-        model.remove(subject, sesameFactory.createURI(field), null);
+        model.remove(subject, sesameFactory.createIRI(field), null);
     }
 
     @Override
@@ -459,7 +459,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
         }
         ValueTypeFilter<Literal> vtf = new ValueTypeFilter<Literal>(languages);
         Iterator<Statement> statements = model.filter(
-            subject, sesameFactory.createURI(field), null).iterator();
+            subject, sesameFactory.createIRI(field), null).iterator();
         while(statements.hasNext()){
             Statement statement = statements.next();
             if(vtf.evaluate(statement.getObject())){
@@ -481,7 +481,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
             //need to be interpreted as default language
             languages = new String []{null};
         }
-        URI property = sesameFactory.createURI(field);
+        IRI property = sesameFactory.createIRI(field);
         for(String language : languages){
             removeValue(property, sesameFactory.createLiteral(value, language));
             if(language == null){ //we need also to remove xsd:string labels
@@ -500,7 +500,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
         if(reference == null){
             log.warn("NULL parsed as value in remove method for symbol "+getId()+" and field "+field+" -> call ignored");
         } else {
-            removeValue(sesameFactory.createURI(field), sesameFactory.createURI(reference));
+            removeValue(sesameFactory.createIRI(field), sesameFactory.createIRI(reference));
         }
 
     }
@@ -538,7 +538,7 @@ public class RdfRepresentation implements Representation, RdfWrapper {
         return model;
     }
     
-    public URI getURI() {
+    public IRI getIRI() {
         return subject;
     }
     

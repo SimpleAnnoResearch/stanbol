@@ -17,20 +17,20 @@
 package org.apache.stanbol.entityhub.model.sesame;
 
 import org.apache.stanbol.entityhub.servicesapi.model.Reference;
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Value;
 
 /**
- * A {@link Reference} implementation backed by a Sesame {@link URI}
+ * A {@link Reference} implementation backed by a Sesame {@link IRI}
  * @author Rupert Westenthaler
  *
  */
 public class RdfReference implements Reference, RdfWrapper {
 
-    private final URI uri;
+    private final IRI uri;
 
 
-    protected RdfReference(URI uri){
+    protected RdfReference(IRI uri){
         this.uri = uri;
     }
     
@@ -39,10 +39,10 @@ public class RdfReference implements Reference, RdfWrapper {
         return uri.stringValue();
     }
     /**
-     * The wrapped Sesame {@link URI}
-     * @return the URI
+     * The wrapped Sesame {@link IRI}
+     * @return the IRI
      */
-    public URI getURI() {
+    public IRI getIRI() {
         return uri;
     }
     @Override

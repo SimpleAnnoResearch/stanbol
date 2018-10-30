@@ -63,7 +63,7 @@ public class RdfResourceImporter implements ResourceImporter {
     @Override
     public ResourceState importResource(InputStream is, String resourceName) throws IOException {
         log.info("> importing {}:", resourceName);
-        RDFFormat rdfFormat = Rio.getParserFormatForFileName(resourceName);
+        RDFFormat rdfFormat = Rio.getParserFormatForFileName(resourceName).orElse(null);
         if(rdfFormat == null){
             log.info("  ... unable to detect RDF format for {}", resourceName);
             log.info("  ... resource '{}' will not be imported", resourceName);

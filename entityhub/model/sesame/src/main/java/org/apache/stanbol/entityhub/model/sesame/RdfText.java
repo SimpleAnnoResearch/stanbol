@@ -34,7 +34,7 @@ public class RdfText implements Text, RdfWrapper {
 
     @Override
     public String getLanguage() {
-        return literal.getLanguage();
+        return literal.getLanguage().orElse(null);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class RdfText implements Text, RdfWrapper {
         if(obj instanceof Text && 
                 getText().equals(((Text)obj).getText())){
             //check the language
-            String l1 = literal.getLanguage();
+            String l1 = literal.getLanguage().orElse(null);
             String l2 = ((Text)obj).getLanguage();
             if(l1 == null){
                 return l2 == null;

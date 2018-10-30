@@ -26,7 +26,7 @@ import org.apache.stanbol.entityhub.servicesapi.model.Reference;
 import org.apache.stanbol.entityhub.servicesapi.model.Text;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Value;
 import org.openrdf.model.vocabulary.XMLSchema;
 
@@ -41,7 +41,7 @@ class ValueTypeFilter<T> implements Predicate {
 
     private boolean referenceState;
     private boolean plainLiteralState;
-    private Set<URI> xmlTypes;
+    private Set<IRI> xmlTypes;
     private Set<String> languages;
     private Class<? extends Value> sesameType;
     
@@ -84,7 +84,7 @@ class ValueTypeFilter<T> implements Predicate {
             return false;
         } else if(sesameType != null){
             return sesameType.isAssignableFrom(object.getClass());
-        } else if(referenceState && object instanceof URI){
+        } else if(referenceState && object instanceof IRI){
             return true;
         } else if(object instanceof Literal){
             Literal literal = (Literal)object;
