@@ -55,7 +55,7 @@
               org.apache.stanbol.commons.owl.web; version=${project.version} 
             </Private-Package>
             <Export-Package>
-              org.apache.stanbol.commons.owl.*; version=${project.version} 
+              org.apache.stanbol.commons.owl.*; version=${project.version}
             </Export-Package>
             <_exportcontents> <!-- used instead of Export-Package to preserve the owlapi jar -->
               org.semanticweb.owlapi.*;version=${owlapi-version},
@@ -137,7 +137,6 @@
 		<groupId>net.sourceforge.owlapi</groupId>
 		<artifactId>owlapi-osgidistribution</artifactId>
 		<version>${owlapi-version}</version>
-		<scope>provided</scope>
 	</dependency>
 
 

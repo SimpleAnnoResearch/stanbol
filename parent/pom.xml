@@ -68,7 +68,7 @@
     
     <!-- sesame and marmotta versions -->
     <sesame-version>2.7.13</sesame-version>
-    <marmotta-version>3.3.0</marmotta-version>
+    <marmotta-version>3.4.0</marmotta-version>
     <ldpath-version>${marmotta-version}</ldpath-version>
     <hazelcast.version>3.3.1</hazelcast.version>
     
@@ -964,7 +964,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>18.0</version>
+        <version>20.0</version>
       </dependency>
 
       <!-- Joda Time -->
