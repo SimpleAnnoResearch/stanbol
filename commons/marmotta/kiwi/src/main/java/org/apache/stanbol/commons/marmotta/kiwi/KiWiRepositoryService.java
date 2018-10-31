@@ -19,10 +19,7 @@ package org.apache.stanbol.commons.marmotta.kiwi;
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrLookup;

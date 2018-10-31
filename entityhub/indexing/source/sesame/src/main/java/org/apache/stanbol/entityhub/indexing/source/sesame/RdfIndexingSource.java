@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashSet;
@@ -602,12 +603,12 @@ public class RdfIndexingSource extends AbstractSesameBackend implements EntityDa
     }
 
     @Override
-    public Literal createLiteral(String content, Locale language, IRI type) {
+    public Literal createLiteral(String content, Locale language, URI type) {
         return createLiteralInternal(sesameFactory, content, language, type);
     }
 
     @Override
-    public org.openrdf.model.IRI createIRI(String uri) {
+    public IRI createURI(String uri) {
         return createIRIInternal(sesameFactory, uri);
     }
 
@@ -699,11 +700,11 @@ public class RdfIndexingSource extends AbstractSesameBackend implements EntityDa
     }
 
     
-    private org.openrdf.model.IRI asUri(Value property){
+    private IRI asUri(Value property){
         if(property instanceof org.openrdf.model.IRI){
             return (org.openrdf.model.IRI)property;
         } else {
-            return createIRI(property.stringValue());
+            return createURI(property.stringValue());
         }
     }
     

@@ -19,6 +19,8 @@ package org.apache.stanbol.entityhub.indexing.source.sesame;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -36,7 +38,6 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
@@ -56,7 +57,7 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractSesameBackend.class);
         
-    protected org.openrdf.model.IRI createIRIInternal(final ValueFactory valueFactory, String uri) {
+    protected IRI createIRIInternal(final ValueFactory valueFactory, String uri) {
         return valueFactory.createIRI(uri);
     }
 
@@ -66,7 +67,7 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
     }
 
     protected Literal createLiteralInternal(final ValueFactory valueFactory, String content,
-            Locale language, org.openrdf.model.IRI type) {
+            Locale language, URI type) {
         if(log.isDebugEnabled()){
             log.debug("creating literal with content \"{}\", language {}, datatype {}",
                 new Object[]{content,language,type});
@@ -81,7 +82,7 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
     }
 
     protected Collection<Value> listObjectsInternal(RepositoryConnection connection, 
-        Resource subject, org.openrdf.model.IRI property, boolean includeInferred, 
+        Resource subject, IRI property, boolean includeInferred, 
         Resource...context)
             throws RepositoryException {
         ValueFactory valueFactory = connection.getValueFactory();
@@ -102,7 +103,7 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
     }
 
     protected Collection<Value> listSubjectsInternal(final RepositoryConnection connection, 
-        org.openrdf.model.IRI property, Value object, boolean includeInferred, 
+        IRI property, Value object, boolean includeInferred, 
         Resource...context)
             throws RepositoryException {
         Set<Value> result = new HashSet<Value>();
@@ -128,7 +129,7 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
      * @return
      */
     protected <T extends Value> T merge(T value, ValueFactory vf) {
-        if(value instanceof org.openrdf.model.IRI) {
+        if(value instanceof IRI) {
             return (T)vf.createIRI(value.stringValue());
         } else if(value instanceof BNode) {
             return (T)vf.createBNode(((BNode) value).getID());
@@ -141,10 +142,10 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
     public abstract Literal createLiteral(String content);
 
     @Override
-    public abstract Literal createLiteral(String content, Locale language, IRI type);
+    public abstract Literal createLiteral(String content, Locale language, URI type);
 
     @Override
-    public abstract IRI createIRI(String uri);
+    public abstract IRI createURI(String uri);
 
     @Override
     public abstract Collection<Value> listObjects(Value subject, Value property);
@@ -181,8 +182,8 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
      * @return true if the node is a IRI
      */
     @Override
-    public boolean isIRI(Value n) {
-        return n instanceof org.openrdf.model.IRI;
+    public boolean isURI(Value n) {
+        return n instanceof IRI;
     }
 
     /**
@@ -225,13 +226,13 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
      * @throws IllegalArgumentException in case the node is no literal
      */
     @Override
-    public IRI getLiteralType(Value n) {
+    public URI getLiteralType(Value n) {
         try {
             if(((Literal)n).getDatatype() != null) {
                 try {
-                	return SimpleValueFactory.getInstance().createIRI(((Literal)n).getDatatype().stringValue());
-                } catch (Exception e) {
-                    log.error("literal datatype was not a valid IRI: {}",((Literal) n).getDatatype());
+                    return new URI(((Literal)n).getDatatype().stringValue());
+                } catch (URISyntaxException e) {
+                    log.error("literal datatype was not a valid URI: {}",((Literal) n).getDatatype());
                     return null;
                 }
             } else {
@@ -364,7 +365,7 @@ public abstract class AbstractSesameBackend implements RDFBackend<Value> {
      * @return the type as string.
      */
     protected String debugType(Value value) {
-        return value == null ? "null":isIRI(value)?"IRI":isBlank(value)?"bNode":
+        return value == null ? "null":isURI(value)?"IRI":isBlank(value)?"bNode":
                 "literal ("+getLiteralType(value)+")";
     }
 
